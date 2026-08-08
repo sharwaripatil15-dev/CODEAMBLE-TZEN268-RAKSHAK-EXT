@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Third Eye - 3 Risk Type Test Playground</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0B0F19;
+      color: #F3F4F6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .card {
+      background-color: #111827;
+      border: 1px solid #1F2937;
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 540px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0, 242, 254, 0.1);
+    }
+    h1 {
+      color: #00F2FE;
+      margin-top: 0;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    p {
+      color: #9CA3AF;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .badge-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .badge {
+      font-size: 11px;
+      font-weight: bold;
+      font-family: monospace;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .badge-safe { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-medium { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-risky { background: rgba(239, 68, 68, 0.2); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    
+    .btn {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 13px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+    .btn-subtitle {
+      font-weight: normal;
+      font-size: 11px;
+      opacity: 0.85;
+    }
+    .btn-safe {
+      background-color: rgba(16, 185, 129, 0.9);
+      color: white;
+    }
+    .btn-safe:hover { background-color: #059669; }
+    .btn-medium {
+      background-color: rgba(245, 158, 11, 0.9);
+      color: white;
+    }
+    .btn-medium:hover { background-color: #D97706; }
+    .btn-risky {
+      background-color: rgba(239, 68, 68, 0.9);
+      color: white;
+    }
+    .btn-risky:hover { background-color: #DC2626; }
+
+    .log-box {
+      margin-top: 20px;
+      background: #080B12;
+      border: 1px solid #1F2937;
+      border-radius: 8px;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #34D399;
+      min-height: 90px;
+      max-height: 160px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>👁️ Third Eye - 3 Transaction Types Playground</h1>
+    <p>Test the 3 distinct transaction risk levels evaluated by the <strong>Third Eye Isolation Forest engine</strong>:</p>
+
+    <div class="badge-bar">
+      <span class="badge badge-safe">🟢 1. SAFE</span>
+      <span class="badge badge-medium">🟡 2. MEDIUM (CAUTION)</span>
+      <span class="badge badge-risky">🔴 3. RISKY (DRAINER)</span>
+    </div>
+
+    <!-- 1. SAFE TRANSACTION -->
+    <button class="btn btn-safe" onclick="testSafeTx()">
+      <span>🟢 1. Safe Transaction: Uniswap V3 ETH Swap</span>
+      <span class="btn-subtitle">Verified smart contract address with normal gas priority and verified bytecode history.</span>
+    </button>
+
+    <!-- 2. MEDIUM RISK TRANSACTION -->
+    <button class="btn btn-medium" onclick="testMediumTx()">
+      <span>🟡 2. Medium Risk Transaction: Gas Priority Anomaly</span>
+      <span class="btn-subtitle">Address flagged for front-running activity 3 days ago with an abnormal priority gas spike.</span>
+    </button>
+
+    <!-- 3. RISKY DRAINER TRANSACTION -->
+    <button class="btn btn-risky" onclick="testRiskyTx()">
+      <span>🔴 3. Risky Drainer Transaction: Unlimited Token Permit Allowance</span>
+      <span class="btn-subtitle">Requests permission to withdraw ALL USDC without limit on an unverified 1.5-hour-old contract.</span>
+    </button>
+
+    <div class="log-box" id="logBox">Status: Ready. Click any sample button above to trigger transaction evaluation.</div>
+  </div>
+
+  <script>
+    if (!window.ethereum) {
+      window.ethereum = {
+        isMetaMask: true,
+        request: async function(args) {
+          log(`Provider received request: ${args.method}. Simulating wallet execution...`);
+          return "0x" + Math.random().toString(16).substring(2, 66);
+        }
+      };
+    }
+
+    function log(msg) {
+      const box = document.getElementById('logBox');
+      box.textContent += "\n" + `[${new Date().toLocaleTimeString()}] ` + msg;
+      box.scrollTop = box.scrollHeight;
+    }
+
+    // 1. SAFE TX
+    async function testSafeTx() {
+      log("Initiating Sample 1 (SAFE): Uniswap V3 Swap...");
+      try {
+        const res = await window.ethereum.request({
+          method: 'eth_sendTransaction',
+          params: [{
+            from: '0x16b779594d7b2c',
+            to: '0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45', // Uniswap V3 Router
+            value: '0x16345785d8a0000', // 0.15 ETH
+            data: '0x38ed1739000000000000000000000000'
+          }]
+        });
+        log("✅ SUCCESS: Transaction approved & executed! Hash: " + res);
+      } catch (err) {
+        log("🛑 REJECTED: " + err.message);
+      }
+    }
+
+    // 2. MEDIUM TX
+    async function testMediumTx() {
+      log("Initiating Sample 2 (MEDIUM / CAUTION): Gas Priority Spike...");
+      try {
+        const res = await window.ethereum.request({
+          method: 'eth_sendTransaction',
+          params: [{
+            from: '0x16b779594d7b2c',
+            to: '0x3f18b123456789012345678901234567890491a0', // Flagged Front-running Address
+            value: '0x58d15e176280000', // 0.40 ETH
+            maxPriorityFeePerGas: '0x12a05f200' // High gas fee
+          }]
+        });
+        log("✅ SUCCESS: Transaction approved & executed! Hash: " + res);
+      } catch (err) {
+        log("🛑 REJECTED: " + err.message);
+      }
+    }
+
+    // 3. RISKY DRAINER TX
+    async function testRiskyTx() {
+      log("Initiating Sample 3 (RISKY / DRAINER): Unlimited USDC Token Approval...");
+      try {
+        const res = await window.ethereum.request({
+          method: 'eth_sendTransaction',
+          params: [{
+            from: '0x16b779594d7b2c',
+            to: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC Contract
+            value: '0x0',
+            // ERC20 approve(spender, uint256_max) -> ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+            data: '0x095ea7b30000000000000000000000000000000000000000000000000000000000000001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+          }]
+        });
+        log("✅ SUCCESS: Transaction approved & executed! Hash: " + res);
+      } catch (err) {
+        log("🛑 BLOCKED BY THIRD EYE: " + err.message);
+      }
+    }
+  </script>
+</body>
+</html>
