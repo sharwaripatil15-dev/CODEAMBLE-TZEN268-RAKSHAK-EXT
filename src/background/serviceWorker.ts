@@ -2,7 +2,7 @@ import { anomalyEngine } from './isolationForest/anomalyScorer';
 import { InterceptedRequest, RiskEvaluation, ExtensionSettings } from '../shared/types';
 import { getItem, setItem } from '../shared/storage';
 
-console.log('👁️ [Third Eye] Background Service Worker initialized.');
+console.log('🛡️ [Rakshak] Background Service Worker initialized.');
 
 const DEFAULT_SETTINGS: ExtensionSettings = {
   autoBlockDrainers: true,
@@ -13,11 +13,12 @@ const DEFAULT_SETTINGS: ExtensionSettings = {
 };
 
 if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onInstalled) {
-  chrome.runtime.onInstalled.addListener(async () => {
-    const existing = await getItem<ExtensionSettings>('thirdEyeSettings');
-    if (!existing) {
-      await setItem('thirdEyeSettings', DEFAULT_SETTINGS);
-    }
+  chrome.runtime.onInstalled.addListener(() => {
+    getItem<ExtensionSettings>('rakshakSettings').then((existing) => {
+      if (!existing) {
+        setItem('rakshakSettings', DEFAULT_SETTINGS);
+      }
+    });
   });
 }
 
@@ -54,7 +55,7 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
 }
 
 async function handleTransactionEvaluation(req: InterceptedRequest): Promise<RiskEvaluation> {
-  console.log(`👁️ [Third Eye] Background evaluating ${req.id} (${req.type}) dynamically.`);
+  console.log(`🛡️ [Rakshak] Background evaluating ${req.id} (${req.type}) dynamically.`);
 
   // 1. Run Isolation Forest Anomaly Engine dynamically
   const evaluation = anomalyEngine.evaluateRequest(req);
@@ -91,7 +92,7 @@ async function handleTransactionEvaluation(req: InterceptedRequest): Promise<Ris
 }
 
 async function getSettings(): Promise<ExtensionSettings> {
-  const settings = await getItem<ExtensionSettings>('thirdEyeSettings');
+  const settings = await getItem<ExtensionSettings>('rakshakSettings');
   return settings || DEFAULT_SETTINGS;
 }
 

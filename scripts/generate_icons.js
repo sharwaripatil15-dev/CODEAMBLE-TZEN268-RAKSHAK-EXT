@@ -5,16 +5,24 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const assetsDir = path.resolve(__dirname, '../dist/assets');
-if (!fs.existsSync(assetsDir)) {
-  fs.mkdirSync(assetsDir, { recursive: true });
+const rootAssetsDir = path.resolve(__dirname, '../assets');
+const distAssetsDir = path.resolve(__dirname, '../dist/assets');
+
+if (!fs.existsSync(rootAssetsDir)) {
+  fs.mkdirSync(rootAssetsDir, { recursive: true });
+}
+if (!fs.existsSync(distAssetsDir)) {
+  fs.mkdirSync(distAssetsDir, { recursive: true });
 }
 
 // 1x1 Cyan pixel base64 PNG
 const cyanPngBase64 = 'iVBORw0KGgoAAAANSU56NTAKAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOUERdVk4AAAAIAAAAAQAAAAEBAAAAABtFv8AAAAANSURBVBhXY/jPw/A/AAUBAPB/AWoAAAAASUVORK5CYII=';
 
-fs.writeFileSync(path.join(assetsDir, 'icon16.png'), Buffer.from(cyanPngBase64, 'base64'));
-fs.writeFileSync(path.join(assetsDir, 'icon48.png'), Buffer.from(cyanPngBase64, 'base64'));
-fs.writeFileSync(path.join(assetsDir, 'icon128.png'), Buffer.from(cyanPngBase64, 'base64'));
+const iconBuffer = Buffer.from(cyanPngBase64, 'base64');
 
-console.log('✅ Generated Chrome Extension icons in dist/assets/');
+['icon16.png', 'icon48.png', 'icon128.png'].forEach((iconName) => {
+  fs.writeFileSync(path.join(rootAssetsDir, iconName), iconBuffer);
+  fs.writeFileSync(path.join(distAssetsDir, iconName), iconBuffer);
+});
+
+console.log('✅ Generated Chrome Extension icons in both assets/ and dist/assets/');
