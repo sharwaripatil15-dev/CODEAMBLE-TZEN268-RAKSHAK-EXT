@@ -18,6 +18,7 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
+        main: resolve(__dirname, 'index.html'),
         popup: resolve(__dirname, 'src/popup/index.html'),
         background: resolve(__dirname, 'src/background/serviceWorker.ts'),
         content: resolve(__dirname, 'src/content/contentScript.ts'),

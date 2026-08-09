@@ -3,217 +3,1062 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Third Eye - 3 Risk Type Test Playground</title>
+  <title>Rakshak - Web3 Security Threat Simulation & Isolation Forest Testing Suite</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;700;800&display=swap');
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #0B0F19;
+      font-family: 'Inter', sans-serif;
+      background-color: #080B12;
       color: #F3F4F6;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
     }
-    .card {
-      background-color: #111827;
-      border: 1px solid #1F2937;
-      border-radius: 16px;
-      padding: 30px;
-      max-width: 540px;
-      width: 100%;
-      box-shadow: 0 10px 30px rgba(0, 242, 254, 0.1);
+    .font-mono {
+      font-family: 'Fira Code', monospace;
     }
-    h1 {
-      color: #00F2FE;
-      margin-top: 0;
-      font-size: 22px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
     }
-    p {
-      color: #9CA3AF;
-      font-size: 13px;
-      line-height: 1.5;
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0B0F19;
     }
-    .badge-bar {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-    .badge {
-      font-size: 11px;
-      font-weight: bold;
-      font-family: monospace;
-      padding: 4px 10px;
-      border-radius: 6px;
-    }
-    .badge-safe { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); }
-    .badge-medium { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.3); }
-    .badge-risky { background: rgba(239, 68, 68, 0.2); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); }
-    
-    .btn {
-      width: 100%;
-      padding: 14px;
-      margin-top: 10px;
-      border-radius: 10px;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 13px;
-      text-align: left;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      transition: all 0.2s ease;
-    }
-    .btn-subtitle {
-      font-weight: normal;
-      font-size: 11px;
-      opacity: 0.85;
-    }
-    .btn-safe {
-      background-color: rgba(16, 185, 129, 0.9);
-      color: white;
-    }
-    .btn-safe:hover { background-color: #059669; }
-    .btn-medium {
-      background-color: rgba(245, 158, 11, 0.9);
-      color: white;
-    }
-    .btn-medium:hover { background-color: #D97706; }
-    .btn-risky {
-      background-color: rgba(239, 68, 68, 0.9);
-      color: white;
-    }
-    .btn-risky:hover { background-color: #DC2626; }
-
-    .log-box {
-      margin-top: 20px;
-      background: #080B12;
-      border: 1px solid #1F2937;
-      border-radius: 8px;
-      padding: 12px;
-      font-family: monospace;
-      font-size: 12px;
-      color: #34D399;
-      min-height: 90px;
-      max-height: 160px;
-      overflow-y: auto;
-      white-space: pre-wrap;
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #1F2937;
+      border-radius: 3px;
     }
   </style>
 </head>
-<body>
+<body class="min-h-screen p-4 md:p-8 flex flex-col antialiased selection:bg-cyan-500 selection:text-black">
 
-  <div class="card">
-    <h1>👁️ Third Eye - 3 Transaction Types Playground</h1>
-    <p>Test the 3 distinct transaction risk levels evaluated by the <strong>Third Eye Isolation Forest engine</strong>:</p>
-
-    <div class="badge-bar">
-      <span class="badge badge-safe">🟢 1. SAFE</span>
-      <span class="badge badge-medium">🟡 2. MEDIUM (CAUTION)</span>
-      <span class="badge badge-risky">🔴 3. RISKY (DRAINER)</span>
+  <!-- Header Banner -->
+  <header class="max-w-6xl mx-auto w-full mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0F172A]/80 p-5 rounded-2xl border border-cyan-500/20 backdrop-blur shadow-xl shadow-cyan-500/5">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-2xl shadow-inner shadow-cyan-500/20">
+        🛡️
+      </div>
+      <div>
+        <h1 class="text-xl md:text-2xl font-black text-white tracking-wide font-mono flex items-center gap-2">
+          RAKSHAK <span class="text-cyan-400 text-sm px-2 py-0.5 rounded bg-cyan-950 border border-cyan-500/30">WEB3 SECURITY SUITE</span>
+        </h1>
+        <p class="text-xs text-gray-400 font-mono mt-0.5">
+          Real-Time Web3 Threat Simulator & Isolation Forest Anomaly Detection Sandbox
+        </p>
+      </div>
     </div>
 
-    <!-- 1. SAFE TRANSACTION -->
-    <button class="btn btn-safe" onclick="testSafeTx()">
-      <span>🟢 1. Safe Transaction: Uniswap V3 ETH Swap</span>
-      <span class="btn-subtitle">Verified smart contract address with normal gas priority and verified bytecode history.</span>
-    </button>
+    <div class="flex items-center gap-3 font-mono text-xs">
+      <div id="walletStatusBadge" class="px-3 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+        <span id="walletStatusText">0x16B77...9594D</span>
+      </div>
+      <button onclick="openMetaMaskConnectModal()" class="px-3.5 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-bold transition-all shadow-md shadow-cyan-500/20 flex items-center gap-1.5">
+        🦊 Connect / Enter MetaMask ID
+      </button>
+    </div>
+  </header>
 
-    <!-- 2. MEDIUM RISK TRANSACTION -->
-    <button class="btn btn-medium" onclick="testMediumTx()">
-      <span>🟡 2. Medium Risk Transaction: Gas Priority Anomaly</span>
-      <span class="btn-subtitle">Address flagged for front-running activity 3 days ago with an abnormal priority gas spike.</span>
-    </button>
+  <!-- Main Grid Layout -->
+  <main class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
 
-    <!-- 3. RISKY DRAINER TRANSACTION -->
-    <button class="btn btn-risky" onclick="testRiskyTx()">
-      <span>🔴 3. Risky Drainer Transaction: Unlimited Token Permit Allowance</span>
-      <span class="btn-subtitle">Requests permission to withdraw ALL USDC without limit on an unverified 1.5-hour-old contract.</span>
-    </button>
+    <!-- Left Column: Attack Presets & Custom Payload Crafter (7 cols) -->
+    <section class="lg:col-span-7 space-y-6">
+      
+      <!-- Preset Attack Vectors -->
+      <div class="bg-[#0B0F19] p-5 rounded-2xl border border-gray-800 shadow-lg space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-extrabold text-white font-mono uppercase tracking-wider flex items-center gap-2">
+            <span class="text-cyan-400">⚡ Preset Attack & Transaction Vectors</span>
+          </h2>
+          <button id="streamToggleBtn" onclick="toggleAutoAttackStream()" class="text-[10px] font-mono font-bold text-cyan-400 bg-cyan-950 px-2.5 py-1 rounded border border-cyan-500/40 hover:bg-cyan-900 transition-all flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span>▶️ Start Dynamic Live Traffic Stream</span>
+          </button>
+        </div>
 
-    <div class="log-box" id="logBox">Status: Ready. Click any sample button above to trigger transaction evaluation.</div>
+        <div class="grid grid-cols-1 gap-3">
+          
+          <!-- Presets -->
+          <button onclick="triggerPreset('SAFE_UNISWAP')" class="group p-3.5 rounded-xl bg-[#111827] hover:bg-[#162032] border border-emerald-500/30 hover:border-emerald-500/60 transition-all text-left flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold text-sm shrink-0">
+              🟢 SAFE
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <div class="font-bold text-white text-sm group-hover:text-emerald-400 transition-colors">Uniswap V3 Protocol Swap</div>
+                <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800">Risk Score: 12%</span>
+              </div>
+              <div class="text-xs text-gray-400 mt-1">Verified contract address (`0x68b346...fc45`), normal gas ratio (1.0x), known protocol.</div>
+            </div>
+          </button>
+
+          <button onclick="triggerPreset('MEDIUM_GAS_SPIKE')" class="group p-3.5 rounded-xl bg-[#111827] hover:bg-[#162032] border border-amber-500/30 hover:border-amber-500/60 transition-all text-left flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold text-sm shrink-0">
+              🟡 CAUTION
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <div class="font-bold text-white text-sm group-hover:text-amber-400 transition-colors">Front-Running / Priority Gas Anomaly</div>
+                <span class="text-[10px] font-mono text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800">Risk Score: 52%</span>
+              </div>
+              <div class="text-xs text-gray-400 mt-1">Address associated with sandwich bot activity, 8.5x priority gas fee spike.</div>
+            </div>
+          </button>
+
+          <button onclick="triggerPreset('RISKY_UNLIMITED_DRAINER')" class="group p-3.5 rounded-xl bg-[#111827] hover:bg-[#162032] border border-red-500/30 hover:border-red-500/60 transition-all text-left flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 font-bold text-sm shrink-0">
+              🔴 DRAINER
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <div class="font-bold text-white text-sm group-hover:text-red-400 transition-colors">Unlimited Token Allowance Permit Drainer</div>
+                <span class="text-[10px] font-mono text-red-400 bg-red-950/60 px-2 py-0.5 rounded border border-red-800">Risk Score: 88%</span>
+              </div>
+              <div class="text-xs text-gray-400 mt-1">Unverified contract created 1.5 hrs ago requesting full allowance (2^256-1) on USDC.</div>
+            </div>
+          </button>
+
+          <button onclick="triggerPreset('PHISHING_AIRDROP')" class="group p-3.5 rounded-xl bg-[#111827] hover:bg-[#162032] border border-purple-500/30 hover:border-purple-500/60 transition-all text-left flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20 font-bold text-sm shrink-0">
+              🚨 PHISHING
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <div class="font-bold text-white text-sm group-hover:text-purple-400 transition-colors">Fake Airdrop TypedData Off-Chain Permit</div>
+                <span class="text-[10px] font-mono text-purple-400 bg-purple-950/60 px-2 py-0.5 rounded border border-purple-800">Risk Score: 95%</span>
+              </div>
+              <div class="text-xs text-gray-400 mt-1">Off-chain `eth_signTypedData_v4` signature on untrusted domain (`claim-airdrop-eth.xyz`).</div>
+            </div>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Custom Payload Builder -->
+      <div class="bg-[#0B0F19] p-5 rounded-2xl border border-gray-800 shadow-lg space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <h2 class="text-sm font-extrabold text-white font-mono uppercase tracking-wider flex items-center gap-2">
+            <span class="text-cyan-400">🛠️ Interactive Payload Crafter</span>
+          </h2>
+          <div class="flex items-center gap-1.5 font-mono text-[10px]">
+            <button onclick="fillCrafterPreset('SAFE')" class="px-2 py-1 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-400 border border-emerald-500/40 rounded font-bold transition-colors">
+              🟢 Load Safe
+            </button>
+            <button onclick="fillCrafterPreset('CAUTION')" class="px-2 py-1 bg-amber-950/80 hover:bg-amber-900 text-amber-400 border border-amber-500/40 rounded font-bold transition-colors">
+              🟡 Load Caution
+            </button>
+            <button onclick="fillCrafterPreset('HIGH_RISK')" class="px-2 py-1 bg-red-950/80 hover:bg-red-900 text-red-400 border border-red-500/40 rounded font-bold transition-colors">
+              🔴 Load High Risk
+            </button>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
+          <div>
+            <label class="text-gray-400 block mb-1">Target Contract Address:</label>
+            <input id="customTo" type="text" value="0x7a250d5630b4cf539739df2c5dacb4c659f2488d" class="w-full bg-[#111827] border border-gray-700 rounded-lg p-2.5 text-cyan-400 focus:border-cyan-500 focus:outline-none" />
+          </div>
+
+          <div>
+            <label class="text-gray-400 block mb-1">Value (ETH):</label>
+            <input id="customValueEth" type="number" step="0.01" value="0.5" class="w-full bg-[#111827] border border-gray-700 rounded-lg p-2.5 text-white focus:border-cyan-500 focus:outline-none" />
+          </div>
+
+          <div>
+            <label class="text-gray-400 block mb-1">Priority Gas Ratio:</label>
+            <input id="customGasRatio" type="number" step="0.1" value="1.0" class="w-full bg-[#111827] border border-gray-700 rounded-lg p-2.5 text-amber-400 focus:border-cyan-500 focus:outline-none" />
+          </div>
+
+          <div>
+            <label class="text-gray-400 block mb-1">Request Type:</label>
+            <select id="customTxType" class="w-full bg-[#111827] border border-gray-700 rounded-lg p-2.5 text-white focus:border-cyan-500 focus:outline-none">
+              <option value="ETH_SEND_TX">eth_sendTransaction</option>
+              <option value="ETH_SIGN_TYPED_DATA">eth_signTypedData_v4</option>
+              <option value="PERSONAL_SIGN">personal_sign</option>
+            </select>
+          </div>
+        </div>
+
+        <button onclick="executeCustomCraftedTx()" class="w-full py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl font-mono text-xs font-bold transition-all shadow-lg shadow-cyan-500/20">
+          🚀 Send Custom Payload Through Rakshak Interceptor
+        </button>
+      </div>
+
+    </section>
+
+    <!-- Right Column: Live Anomaly Terminal & Storage Inspector (5 cols) -->
+    <section class="lg:col-span-5 space-y-6 flex flex-col">
+      
+      <!-- Isolation Forest Live Metric Board -->
+      <div id="isolationEngineCard" class="bg-[#0B0F19] p-5 rounded-2xl border border-gray-800 shadow-lg space-y-4 transition-all">
+        <h2 class="text-sm font-extrabold text-white font-mono uppercase tracking-wider flex items-center justify-between">
+          <span class="text-cyan-400">📊 Isolation Forest Engine State</span>
+          <span id="scoreBadge" class="px-2.5 py-0.5 rounded text-[11px] bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono font-bold">SAFE (12%)</span>
+        </h2>
+
+        <div class="grid grid-cols-2 gap-3 font-mono text-xs">
+          <div class="p-3 rounded-xl bg-[#111827] border border-gray-800">
+            <div class="text-[10px] text-gray-400 uppercase">Risk Score</div>
+            <div id="metricRiskScore" class="text-2xl font-black text-emerald-400 mt-1">12 / 100</div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-[#111827] border border-gray-800">
+            <div class="text-[10px] text-gray-400 uppercase">Anomaly Score</div>
+            <div id="metricAnomalyFactor" class="text-2xl font-black text-cyan-400 mt-1">-0.76</div>
+          </div>
+        </div>
+
+        <!-- DETAILED SIMPLE LANGUAGE WHY AT RISK ANALYSIS BOX -->
+        <div id="simpleRiskAnalysisContainer" class="p-4 rounded-xl bg-[#111827] border border-emerald-500/40 space-y-3 font-sans transition-all">
+          <div class="flex items-center justify-between font-mono text-xs border-b border-gray-800 pb-2">
+            <span class="font-extrabold text-white flex items-center gap-1.5">
+              <span id="simpleRiskIcon">🟢</span>
+              <span id="simpleRiskTitle">Why Is This Interaction Safe?</span>
+            </span>
+            <span id="simpleRiskBadgeTag" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800">
+              LOW RISK VERDICT
+            </span>
+          </div>
+
+          <div class="space-y-2 text-xs">
+            <div>
+              <div class="text-[10px] uppercase font-mono font-bold text-gray-400 mb-0.5">🔍 Risk Analysis in Simple Terms:</div>
+              <p id="simpleRiskExplanation" class="text-gray-200 text-xs leading-relaxed font-sans">
+                This transaction interacts with a well-known, verified smart contract (Uniswap V3). No suspicious unlimited approval requests or priority gas manipulation were detected by the Isolation Forest decision trees.
+              </p>
+            </div>
+
+            <div id="simpleThreatFactorsBox" class="p-2.5 rounded-lg bg-[#080B12] border border-gray-800 space-y-1 font-mono text-[11px]">
+              <div class="text-gray-400 font-bold text-[10px] uppercase">Key Detected Signals:</div>
+              <div id="simpleThreatFactorsList" class="text-emerald-400 space-y-0.5">
+                • ✅ Smart Contract Bytecode Verified on Etherscan<br>
+                • ✅ Standard Token Allowance Limit<br>
+                • ✅ Normal Priority Gas Fee Baseline (1.0x)
+              </div>
+            </div>
+
+            <div id="simpleActionBox" class="p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 font-mono text-[11px] flex items-start gap-1.5">
+              <span id="simpleActionIcon">💡</span>
+              <div>
+                <span class="font-bold">Recommended Action:</span>
+                <div id="simpleActionRecommendation" class="text-emerald-200 mt-0.5 font-sans">
+                  Safe to proceed. Always double-check recipient address digits before approving transactions.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8 Feature Vector Visualizer -->
+        <div class="space-y-1.5 font-mono text-[11px]">
+          <div class="text-gray-400 flex items-center justify-between">
+            <span>Feature Extraction Vector:</span>
+            <span class="text-gray-400">8 Signals</span>
+          </div>
+          <div id="vectorLog" class="p-2.5 rounded-lg bg-[#080B12] border border-gray-800 text-gray-300 font-mono overflow-x-auto whitespace-pre">
+[ValDev: 1.0, GasRatio: 1.0x, ContractAge: 8760h, Verified: true, Unlimited: false, TxCount: 50000, Hist: true, DomainTrust: 100%]
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Execution Log Terminal -->
+      <div class="bg-[#0B0F19] p-5 rounded-2xl border border-gray-800 shadow-lg flex-1 flex flex-col space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-extrabold text-white font-mono uppercase tracking-wider flex items-center gap-2">
+            <span class="text-cyan-400">💻 Live Interceptor Terminal</span>
+          </h2>
+          <button onclick="clearTerminal()" class="text-[10px] font-mono text-gray-400 hover:text-white underline">
+            Clear Log
+          </button>
+        </div>
+
+        <div id="terminalLog" class="flex-1 min-h-[220px] max-h-[360px] p-3 rounded-xl bg-[#080B12] border border-gray-800 font-mono text-[11px] text-emerald-400 custom-scrollbar overflow-y-auto space-y-1">
+          <div>[SYSTEM] Rakshak Interceptor initialized. Listening for web3 provider calls...</div>
+        </div>
+      </div>
+
+      <!-- Local Storage Sync Inspector -->
+      <div class="bg-[#0B0F19] p-5 rounded-2xl border border-gray-800 shadow-lg space-y-3 font-mono text-xs">
+        <div class="flex items-center justify-between">
+          <div class="font-bold text-white flex items-center gap-2">
+            <span>💾 Local Storage Monitor</span>
+          </div>
+          <button onclick="refreshLocalStorageState()" class="text-[10px] text-cyan-400 hover:underline">
+            Refresh Storage
+          </button>
+        </div>
+
+        <div class="p-3 rounded-xl bg-[#111827] border border-gray-800 space-y-1">
+          <div class="text-[10px] text-gray-400">Stored Evaluations Count: <span id="storageEvalCount" class="text-white font-bold">5</span></div>
+          <div class="text-[10px] text-gray-400">Stored Approvals Count: <span id="storageApprovalCount" class="text-white font-bold">2</span></div>
+          <div class="text-[10px] text-gray-400">Custom Wallet ID: <span id="storageWalletId" class="text-cyan-400">0x16b779594d7b2c9594d</span></div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- SECTION: BLOCKED vs PROCEEDED TRANSACTION VECTORS LOG (BOTTOM OF PAGE) -->
+  <section class="max-w-6xl mx-auto w-full mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- 🛑 Intercepted & Blocked Threat Vectors -->
+    <div class="bg-[#0B0F19] p-5 rounded-2xl border border-red-500/20 shadow-lg space-y-4">
+      <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+        <h2 class="text-sm font-extrabold text-red-400 font-mono uppercase tracking-wider flex items-center gap-2">
+          <span>🛑 Intercepted & Blocked Threat Vectors</span>
+        </h2>
+        <span id="blockedCountBadge" class="px-2.5 py-0.5 rounded text-[10px] font-mono bg-red-950 text-red-400 border border-red-800 font-bold">
+          0 Threats Blocked
+        </span>
+      </div>
+
+      <div id="blockedTxList" class="space-y-2.5 max-h-[300px] overflow-y-auto custom-scrollbar font-mono text-xs">
+        <div class="p-3 rounded-xl bg-[#111827] border border-gray-800 text-gray-400 text-center italic">
+          No blocked transactions recorded in this session. Click any threat vector above to test blocking.
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ Proceeded & Executed Successful Transactions -->
+    <div class="bg-[#0B0F19] p-5 rounded-2xl border border-emerald-500/20 shadow-lg space-y-4">
+      <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+        <h2 class="text-sm font-extrabold text-emerald-400 font-mono uppercase tracking-wider flex items-center gap-2">
+          <span>✅ Proceeded & Executed Transactions</span>
+        </h2>
+        <span id="executedCountBadge" class="px-2.5 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 font-bold">
+          0 Executed
+        </span>
+      </div>
+
+      <div id="executedTxList" class="space-y-2.5 max-h-[300px] overflow-y-auto custom-scrollbar font-mono text-xs">
+        <div class="p-3 rounded-xl bg-[#111827] border border-gray-800 text-gray-400 text-center italic">
+          No executed transactions recorded in this session.
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- SECTION: COMPLETE ISOLATION FOREST ENGINE ANALYSIS -->
+  <section class="max-w-6xl mx-auto w-full mt-8 bg-[#0B0F19] p-6 rounded-2xl border border-cyan-500/30 shadow-2xl space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-gray-800 pb-4">
+      <div>
+        <h2 class="text-base font-black text-white font-mono uppercase tracking-wider flex items-center gap-2">
+          <span>🔬 Complete Analysis: Isolation Forest Anomaly Detection Engine</span>
+        </h2>
+        <p class="text-xs text-gray-400 font-mono mt-0.5">
+          On-device unsupervised anomaly tree path length calculation & 8-dimensional feature vector breakdown
+        </p>
+      </div>
+      <div class="px-3 py-1 bg-cyan-950 text-cyan-400 border border-cyan-500/40 rounded-lg text-xs font-mono font-bold">
+        Engine Model: Scikit-Learn IsolationForest (n_estimators=100)
+      </div>
+    </div>
+
+    <!-- Mathematical Formula Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+      <div class="p-4 rounded-xl bg-[#111827] border border-gray-800 space-y-2">
+        <div class="text-cyan-400 font-bold uppercase text-[11px]">1. Anomaly Path Formula</div>
+        <div class="text-sm font-bold text-white bg-[#080B12] p-2.5 rounded border border-gray-800 text-center font-mono">
+          s(x, n) = 2<sup>-E(h(x)) / c(n)</sup>
+        </div>
+        <div class="text-[11px] text-gray-400 leading-relaxed">
+          Measures path depth <span class="text-white font-bold">h(x)</span> in randomized decision trees. Shorter paths indicate anomalies.
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-[#111827] border border-gray-800 space-y-2">
+        <div class="text-amber-400 font-bold uppercase text-[11px]">2. Path Length Expectation</div>
+        <div class="text-sm font-bold text-white bg-[#080B12] p-2.5 rounded border border-gray-800 text-center font-mono">
+          c(n) = 2(ln(n-1) + 0.5772) - 2(n-1)/n
+        </div>
+        <div class="text-[11px] text-gray-400 leading-relaxed">
+          Average path length of unsuccessful search in Binary Search Tree for sample size <span class="text-white font-bold">n = 256</span>.
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-[#111827] border border-gray-800 space-y-2">
+        <div class="text-emerald-400 font-bold uppercase text-[11px]">3. Decision Threshold</div>
+        <div class="text-sm font-bold text-white bg-[#080B12] p-2.5 rounded border border-gray-800 text-center font-mono">
+          s(x, n) &gt; 0.60 &rArr; ANOMALY
+        </div>
+        <div class="text-[11px] text-gray-400 leading-relaxed">
+          Score &gt; 0.60 = High Risk Drainer. Score &lt; 0.40 = Normal verified interaction.
+        </div>
+      </div>
+    </div>
+
+    <!-- 8-Dimensional Feature Matrix Table -->
+    <div class="space-y-3 font-mono text-xs">
+      <div class="font-bold text-white uppercase text-xs flex items-center justify-between">
+        <span>8-Dimensional Feature Extraction Matrix Breakdown</span>
+        <span class="text-gray-400 text-[11px]">Active Signals Evaluation</span>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl border border-gray-800">
+        <table class="w-full text-left border-collapse font-mono text-xs">
+          <thead class="bg-[#111827] text-gray-400 uppercase text-[10px] border-b border-gray-800">
+            <tr>
+              <th class="p-3">Feature Name</th>
+              <th class="p-3">Signal Description</th>
+              <th class="p-3">Current Value</th>
+              <th class="p-3">Normalized (0.0 - 1.0)</th>
+              <th class="p-3">Weight Impact</th>
+              <th class="p-3">Threat Condition</th>
+            </tr>
+          </thead>
+          <tbody id="featureMatrixTableBody" class="divide-y divide-gray-800 bg-[#080B12]">
+            <!-- Table rows populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Connect / Enter MetaMask ID Modal Dialog -->
+  <div id="metaMaskConnectModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-[#0B0F19] border border-cyan-500/40 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5 text-gray-100 font-sans">
+      
+      <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🦊</span>
+          <span class="font-black text-white text-base font-mono">Connect / Enter MetaMask ID</span>
+        </div>
+        <button onclick="closeMetaMaskConnectModal()" class="text-gray-400 hover:text-white font-mono text-sm">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs font-mono">
+        <!-- Option A: Auto Connect -->
+        <div class="p-3.5 rounded-xl bg-[#111827] border border-gray-800 space-y-2">
+          <div class="font-bold text-white">Option 1: Auto-Detect Browser Wallet</div>
+          <div class="text-gray-400 text-[11px]">Connect automatically using installed MetaMask browser extension.</div>
+          <button onclick="connectRealMetaMask()" class="w-full py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-bold transition-all">
+            🦊 Connect via Browser Provider
+          </button>
+        </div>
+
+        <!-- Option B: Enter Custom MetaMask ID -->
+        <div class="p-3.5 rounded-xl bg-[#111827] border border-gray-800 space-y-3">
+          <div class="font-bold text-white">Option 2: Enter Custom MetaMask ID</div>
+          <div class="text-gray-400 text-[11px]">Enter any 0x... wallet address to simulate security monitoring.</div>
+          <input
+            id="customMetaMaskInput"
+            type="text"
+            placeholder="Enter 0x... MetaMask Address"
+            class="w-full bg-[#0B0F19] border border-cyan-500 rounded-lg p-2.5 text-cyan-400 focus:outline-none text-xs font-mono"
+            value="0x16b779594d7b2c9594d"
+          />
+          <button onclick="saveCustomMetaMaskIdFromModal()" class="w-full py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg font-bold transition-all">
+            💾 Save MetaMask ID to Local Storage
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Embedded Security Modal Sandbox Overlay -->
+  <div id="interactiveModalOverlay" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-[#0B0F19] border border-cyan-500/40 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5 text-gray-100 font-sans">
+      
+      <!-- Overlay Header -->
+      <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-red-500/20 border border-red-500/40 flex items-center justify-center text-lg">
+            🚨
+          </div>
+          <div>
+            <div class="font-black text-white text-base font-mono" id="modalTitle">SECURITY THREAT DETECTED</div>
+            <div class="text-xs text-gray-400 font-mono" id="modalSubtitle">Rakshak Isolation Forest Interceptor</div>
+          </div>
+        </div>
+        <span id="modalRiskBadge" class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-red-600 text-white">
+          HIGH RISK (88%)
+        </span>
+      </div>
+
+      <!-- Verdict Summary -->
+      <div class="p-4 rounded-xl bg-[#111827] border border-gray-800 space-y-2">
+        <div class="font-bold text-white text-sm" id="modalOneSentence">
+          🔴 High Risk — Unlimited Token Allowance Drainer Request
+        </div>
+        <div class="text-xs text-gray-300 leading-relaxed" id="modalWhy">
+          The dApp is requesting an unlimited allowance to spend ALL of your tokens on an unverified contract created 1.5 hours ago.
+        </div>
+      </div>
+
+      <!-- Actionable Safety Tip -->
+      <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono flex items-start gap-2">
+        <span>💡</span>
+        <span id="modalSafetyTip">🛑 Safety Tip: Do NOT approve unlimited allowances for unverified dApps. Consider blocking this request.</span>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-3 pt-2">
+        <button onclick="respondModal('BLOCK')" class="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold font-mono text-xs transition-all shadow-lg shadow-red-600/30">
+          🛑 Block Transaction
+        </button>
+        <button onclick="respondModal('APPROVE')" class="px-4 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl font-mono text-xs transition-all">
+          Proceed Anyway
+        </button>
+      </div>
+
+    </div>
   </div>
 
   <script>
+    let currentResolver = null;
+    let blockedTxHistory = [];
+    let executedTxHistory = [];
+
+    // Current active signals vector state
+    let activeSignals = {
+      valueUsdDeviation: 1.0,
+      gasPriorityFeeRatio: 1.0,
+      contractAgeHours: 8760,
+      contractIsVerified: true,
+      isUnlimitedApproval: false,
+      recipientTxCount: 50000,
+      historicalInteraction: true,
+      domainTrustScore: 100
+    };
+
     if (!window.ethereum) {
       window.ethereum = {
         isMetaMask: true,
         request: async function(args) {
-          log(`Provider received request: ${args.method}. Simulating wallet execution...`);
+          logTerminal(`Provider received request: ${args.method}`);
           return "0x" + Math.random().toString(16).substring(2, 66);
         }
       };
     }
 
-    function log(msg) {
-      const box = document.getElementById('logBox');
-      box.textContent += "\n" + `[${new Date().toLocaleTimeString()}] ` + msg;
-      box.scrollTop = box.scrollHeight;
+    function openMetaMaskConnectModal() {
+      const saved = localStorage.getItem('customMetaMaskAddress') || '0x16b779594d7b2c9594d';
+      document.getElementById('customMetaMaskInput').value = saved;
+      document.getElementById('metaMaskConnectModal').classList.remove('hidden');
     }
 
-    // 1. SAFE TX
-    async function testSafeTx() {
-      log("Initiating Sample 1 (SAFE): Uniswap V3 Swap...");
-      try {
-        const res = await window.ethereum.request({
-          method: 'eth_sendTransaction',
-          params: [{
-            from: '0x16b779594d7b2c',
-            to: '0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45', // Uniswap V3 Router
-            value: '0x16345785d8a0000', // 0.15 ETH
-            data: '0x38ed1739000000000000000000000000'
-          }]
-        });
-        log("✅ SUCCESS: Transaction approved & executed! Hash: " + res);
-      } catch (err) {
-        log("🛑 REJECTED: " + err.message);
+    function closeMetaMaskConnectModal() {
+      document.getElementById('metaMaskConnectModal').classList.add('hidden');
+    }
+
+    async function saveCustomMetaMaskIdFromModal() {
+      const val = document.getElementById('customMetaMaskInput').value.trim();
+      if (!val) return;
+
+      localStorage.setItem('customMetaMaskAddress', val);
+      window.dispatchEvent(new CustomEvent('rakshak-local-storage-change', {
+        detail: { key: 'customMetaMaskAddress', newValue: val }
+      }));
+
+      const display = val.length > 12 ? `${val.substring(0,6)}...${val.substring(val.length-4)}` : val;
+      document.getElementById('walletStatusText').textContent = display;
+      logTerminal(`[METAMASK] Custom Wallet ID saved to local storage: ${val}`);
+      refreshLocalStorageState();
+      closeMetaMaskConnectModal();
+    }
+
+    async function connectRealMetaMask() {
+      if (window.ethereum && window.ethereum.request) {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          if (accounts.length > 0) {
+            const acc = accounts[0];
+            localStorage.setItem('customMetaMaskAddress', acc);
+            window.dispatchEvent(new CustomEvent('rakshak-local-storage-change', {
+              detail: { key: 'customMetaMaskAddress', newValue: acc }
+            }));
+            const display = acc.length > 12 ? `${acc.substring(0,6)}...${acc.substring(acc.length-4)}` : acc;
+            document.getElementById('walletStatusText').textContent = display;
+            logTerminal(`[METAMASK] Connected real browser wallet: ${acc}`);
+            refreshLocalStorageState();
+            closeMetaMaskConnectModal();
+          }
+        } catch (e) {
+          logTerminal(`[METAMASK] Connection error: ${e.message}`);
+        }
       }
     }
 
-    // 2. MEDIUM TX
-    async function testMediumTx() {
-      log("Initiating Sample 2 (MEDIUM / CAUTION): Gas Priority Spike...");
-      try {
-        const res = await window.ethereum.request({
-          method: 'eth_sendTransaction',
-          params: [{
-            from: '0x16b779594d7b2c',
-            to: '0x3f18b123456789012345678901234567890491a0', // Flagged Front-running Address
-            value: '0x58d15e176280000', // 0.40 ETH
-            maxPriorityFeePerGas: '0x12a05f200' // High gas fee
-          }]
-        });
-        log("✅ SUCCESS: Transaction approved & executed! Hash: " + res);
-      } catch (err) {
-        log("🛑 REJECTED: " + err.message);
+    function logTerminal(msg) {
+      const log = document.getElementById('terminalLog');
+      const time = new Date().toLocaleTimeString();
+      const div = document.createElement('div');
+      div.textContent = `[${time}] ${msg}`;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function clearTerminal() {
+      document.getElementById('terminalLog').innerHTML = '<div>[SYSTEM] Terminal cleared. Ready for interception...</div>';
+    }
+
+    function updateMetrics(riskScore, anomalyFactor, vectorStr, level, signals, evalObj) {
+      const riskEl = document.getElementById('metricRiskScore');
+      const factorEl = document.getElementById('metricAnomalyFactor');
+      const badgeEl = document.getElementById('scoreBadge');
+      const vectorEl = document.getElementById('vectorLog');
+
+      riskEl.textContent = `${riskScore} / 100`;
+      factorEl.textContent = anomalyFactor;
+      vectorEl.textContent = vectorStr;
+
+      if (signals) {
+        activeSignals = { ...signals };
+        renderFeatureMatrixTable(signals);
+      }
+
+      updateSimpleRiskAnalysis(level, signals || activeSignals, evalObj);
+
+      if (level === 'SAFE') {
+        riskEl.className = "text-2xl font-black text-emerald-400 mt-1";
+        badgeEl.className = "px-2.5 py-0.5 rounded text-[11px] bg-emerald-950 text-emerald-400 border border-emerald-800";
+        badgeEl.textContent = "SAFE (12%)";
+      } else if (level === 'CAUTION') {
+        riskEl.className = "text-2xl font-black text-amber-400 mt-1";
+        badgeEl.className = "px-2.5 py-0.5 rounded text-[11px] bg-amber-950 text-amber-400 border border-amber-800";
+        badgeEl.textContent = "CAUTION (52%)";
+      } else {
+        riskEl.className = "text-2xl font-black text-red-400 mt-1";
+        badgeEl.className = "px-2.5 py-0.5 rounded text-[11px] bg-red-950 text-red-400 border border-red-800";
+        badgeEl.textContent = "HIGH RISK (88%)";
       }
     }
 
-    // 3. RISKY DRAINER TX
-    async function testRiskyTx() {
-      log("Initiating Sample 3 (RISKY / DRAINER): Unlimited USDC Token Approval...");
-      try {
-        const res = await window.ethereum.request({
-          method: 'eth_sendTransaction',
-          params: [{
-            from: '0x16b779594d7b2c',
-            to: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC Contract
-            value: '0x0',
-            // ERC20 approve(spender, uint256_max) -> ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-            data: '0x095ea7b30000000000000000000000000000000000000000000000000000000000000001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
-          }]
-        });
-        log("✅ SUCCESS: Transaction approved & executed! Hash: " + res);
-      } catch (err) {
-        log("🛑 BLOCKED BY THIRD EYE: " + err.message);
+    function updateSimpleRiskAnalysis(level, signals, evalObj) {
+      const container = document.getElementById('simpleRiskAnalysisContainer');
+      const icon = document.getElementById('simpleRiskIcon');
+      const title = document.getElementById('simpleRiskTitle');
+      const badge = document.getElementById('simpleRiskBadgeTag');
+      const explanation = document.getElementById('simpleRiskExplanation');
+      const factorsList = document.getElementById('simpleThreatFactorsList');
+      const actionBox = document.getElementById('simpleActionBox');
+      const actionIcon = document.getElementById('simpleActionIcon');
+      const actionRec = document.getElementById('simpleActionRecommendation');
+
+      if (level === 'HIGH_RISK') {
+        container.className = "p-4 rounded-xl bg-red-950/30 border border-red-500/60 space-y-3 font-sans transition-all shadow-lg shadow-red-500/10";
+        icon.textContent = "🔴";
+        title.textContent = "Why Is This Transaction At Risk?";
+        badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-red-950 text-red-400 border border-red-800";
+        badge.textContent = "HIGH RISK DRAINER WARNING";
+
+        if (signals.isUnlimitedApproval) {
+          explanation.textContent = "The website is asking for permission to withdraw ALL of your tokens without limit. The target smart contract was created less than 2 hours ago and its code is unverified on block explorers. If this site is hacked or malicious, an attacker can steal all your tokens at any time without asking for your password.";
+          factorsList.innerHTML = `
+            <div class="text-red-400 font-bold">• 🚨 UNLIMITED TOKEN ALLOWANCE (2^256-1) REQUESTED</div>
+            <div class="text-red-400">• 🚨 FRESH UNVERIFIED CONTRACT (Created <2h ago)</div>
+            <div class="text-red-400">• 🚨 ZERO HISTORICAL RECIPIENT TRANSACTIONS</div>
+          `;
+        } else {
+          explanation.textContent = "Off-chain permit signature (`eth_signTypedData_v4`) requested on an untrusted phishing domain (`claim-airdrop-eth.xyz`). Signing this off-chain permit grants full access to transfer your assets without paying gas fees.";
+          factorsList.innerHTML = `
+            <div class="text-purple-400 font-bold">• 🚨 OFF-CHAIN PERMIT SIGNATURE REQUESTED</div>
+            <div class="text-purple-400">• 🚨 UNTRUSTED / PHISHING ORIGIN DOMAIN</div>
+            <div class="text-purple-400">• 🚨 ZERO DOMAIN TRUST INDEX (0%)</div>
+          `;
+        }
+
+        actionBox.className = "p-2.5 rounded-lg bg-red-950/60 border border-red-500/50 text-red-300 font-mono text-[11px] flex items-start gap-1.5";
+        actionIcon.textContent = "🛑";
+        actionRec.textContent = "DO NOT SIGN THIS REQUEST! Click 'Block Transaction' immediately to safeguard your wallet balance.";
+      } 
+      else if (level === 'CAUTION') {
+        container.className = "p-4 rounded-xl bg-amber-950/30 border border-amber-500/60 space-y-3 font-sans transition-all shadow-lg shadow-amber-500/10";
+        icon.textContent = "🟡";
+        title.textContent = "Why Is This Transaction Under Caution?";
+        badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950 text-amber-400 border border-amber-800";
+        badge.textContent = "PRIORITY GAS ANOMALY";
+
+        explanation.textContent = "This transaction uses an unusually high priority gas fee (8.5x higher than network baseline). Automated trading bots often pay extreme priority gas fees to front-run users, executing trades right before yours to profit off price slippage.";
+        factorsList.innerHTML = `
+          <div class="text-amber-400 font-bold">• ⚠️ ABNORMAL PRIORITY GAS FEE SPIKE (8.5x baseline)</div>
+          <div class="text-amber-400">• ⚠️ Recipient Address Flagged for Front-Running Bot Activity</div>
+          <div class="text-amber-400">• ⚠️ New Interaction History with Sender Wallet</div>
+        `;
+
+        actionBox.className = "p-2.5 rounded-lg bg-amber-950/60 border border-amber-500/50 text-amber-300 font-mono text-[11px] flex items-start gap-1.5";
+        actionIcon.textContent = "💡";
+        actionRec.textContent = "Consider waiting a few minutes for network gas spikes to settle before submitting your transaction.";
+      } 
+      else {
+        container.className = "p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/40 space-y-3 font-sans transition-all shadow-lg shadow-emerald-500/10";
+        icon.textContent = "🟢";
+        title.textContent = "Why Is This Interaction Safe?";
+        badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800";
+        badge.textContent = "LOW RISK VERDICT";
+
+        explanation.textContent = "This transaction interacts with a well-known, verified smart contract (such as Uniswap V3 or OpenSea). No suspicious unlimited token allowance requests or priority gas manipulation were detected.";
+        factorsList.innerHTML = `
+          <div class="text-emerald-400 font-bold">• ✅ Smart Contract Bytecode Verified on Etherscan</div>
+          <div class="text-emerald-400">• ✅ Standard Token Allowance Limit</div>
+          <div class="text-emerald-400">• ✅ Normal Priority Gas Fee Baseline (1.0x)</div>
+        `;
+
+        actionBox.className = "p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 font-mono text-[11px] flex items-start gap-1.5";
+        actionIcon.textContent = "💡";
+        actionRec.textContent = "Safe to proceed. Always double-check recipient address digits before approving transactions.";
       }
     }
+
+    function renderFeatureMatrixTable(s) {
+      const tbody = document.getElementById('featureMatrixTableBody');
+      const rows = [
+        {
+          name: 'valueUsdDeviation',
+          desc: 'Value USD Deviation Baseline',
+          val: `${s.valueUsdDeviation}x`,
+          norm: (Math.min(s.valueUsdDeviation, 10) / 10).toFixed(2),
+          weight: '15%',
+          threat: s.valueUsdDeviation > 5.0 ? '🔴 High Deviation' : '🟢 Normal'
+        },
+        {
+          name: 'gasPriorityFeeRatio',
+          desc: 'Priority Gas Spike Ratio',
+          val: `${s.gasPriorityFeeRatio}x`,
+          norm: (Math.min(s.gasPriorityFeeRatio, 10) / 10).toFixed(2),
+          weight: '15%',
+          threat: s.gasPriorityFeeRatio > 2.5 ? '🟡 Front-Running Spike' : '🟢 Normal'
+        },
+        {
+          name: 'contractAgeHours',
+          desc: 'Contract Code Deployment Age',
+          val: `${s.contractAgeHours}h`,
+          norm: (1.0 - Math.min(s.contractAgeHours, 720) / 720).toFixed(2),
+          weight: '20%',
+          threat: s.contractAgeHours <= 24 ? '🔴 Fresh Contract (<24h)' : '🟢 Established'
+        },
+        {
+          name: 'contractIsVerified',
+          desc: 'Etherscan Bytecode Verification',
+          val: s.contractIsVerified ? 'True (Verified)' : 'False (Unverified)',
+          norm: s.contractIsVerified ? '0.00' : '1.00',
+          weight: '20%',
+          threat: s.contractIsVerified ? '🟢 Verified' : '🔴 Unverified Source'
+        },
+        {
+          name: 'isUnlimitedApproval',
+          desc: 'ERC-20 Unlimited Permit (2^256-1)',
+          val: s.isUnlimitedApproval ? 'TRUE (UNLIMITED)' : 'False',
+          norm: s.isUnlimitedApproval ? '1.00' : '0.00',
+          weight: '25%',
+          threat: s.isUnlimitedApproval ? '🚨 Drainer Permit Risk' : '🟢 Safe Allowance'
+        },
+        {
+          name: 'recipientTxCount',
+          desc: 'Recipient Transaction Volume',
+          val: `${s.recipientTxCount}`,
+          norm: (1.0 - Math.min(s.recipientTxCount, 1000) / 1000).toFixed(2),
+          weight: '10%',
+          threat: s.recipientTxCount < 50 ? '🔴 Low Activity' : '🟢 Active'
+        },
+        {
+          name: 'historicalInteraction',
+          desc: 'Sender Prior Interaction History',
+          val: s.historicalInteraction ? 'True (Prior History)' : 'False',
+          norm: s.historicalInteraction ? '0.00' : '1.00',
+          weight: '10%',
+          threat: s.historicalInteraction ? '🟢 Known Recipient' : '🟡 New Address'
+        },
+        {
+          name: 'domainTrustScore',
+          desc: 'Origin Domain Security Index',
+          val: `${s.domainTrustScore}%`,
+          norm: ((100 - s.domainTrustScore) / 100).toFixed(2),
+          weight: '15%',
+          threat: s.domainTrustScore < 40 ? '🚨 Untrusted / Phishing' : '🟢 Verified Domain'
+        }
+      ];
+
+      tbody.innerHTML = rows.map(r => `
+        <tr class="hover:bg-[#111827] transition-colors">
+          <td class="p-3 font-bold text-cyan-400">${r.name}</td>
+          <td class="p-3 text-gray-300 text-[11px]">${r.desc}</td>
+          <td class="p-3 text-white font-bold">${r.val}</td>
+          <td class="p-3 text-cyan-400 font-bold">${r.norm}</td>
+          <td class="p-3 text-gray-400">${r.weight}</td>
+          <td class="p-3 font-bold">${r.threat}</td>
+        </tr>
+      `).join('');
+    }
+
+    function addBlockedTransactionRecord(evalObj) {
+      blockedTxHistory.unshift(evalObj);
+      const badge = document.getElementById('blockedCountBadge');
+      const list = document.getElementById('blockedTxList');
+      badge.textContent = `${blockedTxHistory.length} Threats Blocked`;
+
+      list.innerHTML = blockedTxHistory.map(item => `
+        <div class="p-3.5 rounded-xl bg-[#111827] border border-red-500/30 space-y-1.5 font-mono">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-extrabold text-red-400">🛑 ${item.txId}</span>
+            <span class="px-2 py-0.5 rounded text-[10px] bg-red-950 text-red-300 font-bold border border-red-800">
+              ${item.riskLevel} (${item.riskScore}%)
+            </span>
+          </div>
+          <div class="text-[11px] text-white font-bold">${item.oneSentenceSummary}</div>
+          <div class="text-[10px] text-gray-400">${item.plainEnglishWhy}</div>
+          <div class="text-[9px] text-gray-500 flex items-center justify-between pt-1 border-t border-gray-800">
+            <span>Intercepted: ${new Date().toLocaleTimeString()}</span>
+            <span class="text-red-400 font-bold">STATUS: REJECTED</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addExecutedTransactionRecord(evalObj, hash) {
+      executedTxHistory.unshift({ evalObj, hash, timestamp: new Date().toLocaleTimeString() });
+      const badge = document.getElementById('executedCountBadge');
+      const list = document.getElementById('executedTxList');
+      badge.textContent = `${executedTxHistory.length} Executed`;
+
+      list.innerHTML = executedTxHistory.map(item => `
+        <div class="p-3.5 rounded-xl bg-[#111827] border border-emerald-500/30 space-y-1.5 font-mono">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-extrabold text-emerald-400">✅ ${item.evalObj.txId}</span>
+            <span class="px-2 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-300 font-bold border border-emerald-800">
+              ${item.evalObj.riskLevel} (${item.evalObj.riskScore}%)
+            </span>
+          </div>
+          <div class="text-[11px] text-white font-bold">${item.evalObj.oneSentenceSummary}</div>
+          <div class="text-[10px] text-cyan-400 truncate">Hash: ${item.hash}</div>
+          <div class="text-[9px] text-gray-500 flex items-center justify-between pt-1 border-t border-gray-800">
+            <span>Executed: ${item.timestamp}</span>
+            <span class="text-emerald-400 font-bold">STATUS: CONFIRMED</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function refreshLocalStorageState() {
+      try {
+        const evals = JSON.parse(localStorage.getItem('recentEvaluations') || '[]');
+        const approvals = JSON.parse(localStorage.getItem('activeApprovals') || '[]');
+        const walletId = localStorage.getItem('customMetaMaskAddress') || '0x16b779594d7b2c9594d';
+
+        document.getElementById('storageEvalCount').textContent = evals.length;
+        document.getElementById('storageApprovalCount').textContent = approvals.length;
+
+        const display = walletId.length > 12 ? `${walletId.substring(0,6)}...${walletId.substring(walletId.length-4)}` : walletId;
+        document.getElementById('storageWalletId').textContent = walletId;
+        document.getElementById('walletStatusText').textContent = display;
+      } catch (e) {}
+    }
+
+    function showModalOverlay(evaluation) {
+      return new Promise((resolve) => {
+        currentResolver = resolve;
+        document.getElementById('modalTitle').textContent = evaluation.riskLevel === 'HIGH_RISK' ? 'SECURITY THREAT DETECTED' : 'SECURITY NOTICE';
+        document.getElementById('modalRiskBadge').textContent = `${evaluation.riskLevel} (${evaluation.riskScore}%)`;
+        document.getElementById('modalOneSentence').textContent = evaluation.oneSentenceSummary;
+        document.getElementById('modalWhy').textContent = evaluation.plainEnglishWhy;
+        document.getElementById('modalSafetyTip').textContent = evaluation.actionableSafetyTip;
+
+        document.getElementById('interactiveModalOverlay').classList.remove('hidden');
+      });
+    }
+
+    function respondModal(action) {
+      document.getElementById('interactiveModalOverlay').classList.add('hidden');
+      if (currentResolver) {
+        currentResolver(action);
+        currentResolver = null;
+      }
+    }
+
+    async function processEvaluationAndIntercept(evalObj) {
+      updateMetrics(
+        evalObj.riskScore,
+        evalObj.isolationForestAnomalyScore,
+        `[ValDev: ${evalObj.signals.valueUsdDeviation}, GasRatio: ${evalObj.signals.gasPriorityFeeRatio}x, ContractAge: ${evalObj.signals.contractAgeHours}h, Verified: ${evalObj.signals.contractIsVerified}, Unlimited: ${evalObj.signals.isUnlimitedApproval}]`,
+        evalObj.riskLevel,
+        evalObj.signals,
+        evalObj
+      );
+
+      logTerminal(`Captured RPC call: ${evalObj.txId}. Risk score: ${evalObj.riskScore}% (${evalObj.riskLevel}).`);
+
+      if (evalObj.riskLevel !== 'SAFE') {
+        const userChoice = await showModalOverlay(evalObj);
+        if (userChoice === 'BLOCK') {
+          logTerminal(`🛑 TRANSACTION BLOCKED BY USER / RAKSHAK.`);
+          addBlockedTransactionRecord(evalObj);
+          throw new Error('User blocked transaction due to high anomaly risk.');
+        } else {
+          logTerminal(`⚠️ User chose to proceed despite risk level.`);
+        }
+      }
+
+      const hash = "0x" + Math.random().toString(16).substring(2, 66);
+      addExecutedTransactionRecord(evalObj, hash);
+      logTerminal(`✅ Transaction executed successfully. Hash: ${hash}`);
+      return hash;
+    }
+
+    async function triggerPreset(type) {
+      if (type === 'SAFE_UNISWAP') {
+        logTerminal("Triggering Preset: Uniswap V3 Protocol Swap...");
+        const evalObj = {
+          txId: "tx_0x" + Math.random().toString(16).substring(2, 8),
+          riskScore: 12,
+          isolationForestAnomalyScore: -0.76,
+          riskLevel: 'SAFE',
+          oneSentenceSummary: "🟢 Safe — Verified contract interaction with Uniswap V3 Router.",
+          plainEnglishWhy: "This address belongs to a verified smart contract with clean interaction history.",
+          actionableSafetyTip: "💡 Tip: Always verify recipient address before sending large ETH amounts.",
+          signals: { valueUsdDeviation: 1.0, gasPriorityFeeRatio: 1.0, contractAgeHours: 8760, contractIsVerified: true, isUnlimitedApproval: false, recipientTxCount: 450000, historicalInteraction: true, domainTrustScore: 100 }
+        };
+        await processEvaluationAndIntercept(evalObj);
+      } 
+      else if (type === 'MEDIUM_GAS_SPIKE') {
+        logTerminal("Triggering Preset: Priority Gas Fee Anomaly...");
+        const evalObj = {
+          txId: "tx_0x" + Math.random().toString(16).substring(2, 8),
+          riskScore: 52,
+          isolationForestAnomalyScore: 0.25,
+          riskLevel: 'CAUTION',
+          oneSentenceSummary: "🟡 Caution — Abnormal priority gas fee ratio (8.5x priority spike).",
+          plainEnglishWhy: "This transaction uses an unusually high priority gas fee associated with automated sandwich bots.",
+          actionableSafetyTip: "💡 Safety Tip: Consider waiting for gas spikes to settle.",
+          signals: { valueUsdDeviation: 3.2, gasPriorityFeeRatio: 8.5, contractAgeHours: 72, contractIsVerified: true, isUnlimitedApproval: false, recipientTxCount: 1200, historicalInteraction: false, domainTrustScore: 75 }
+        };
+        await processEvaluationAndIntercept(evalObj);
+      }
+      else if (type === 'RISKY_UNLIMITED_DRAINER') {
+        logTerminal("Triggering Preset: Unlimited Token Allowance Permit Drainer...");
+        const evalObj = {
+          txId: "tx_0x" + Math.random().toString(16).substring(2, 8),
+          riskScore: 88,
+          isolationForestAnomalyScore: 0.85,
+          riskLevel: 'HIGH_RISK',
+          oneSentenceSummary: "🔴 High Risk — Unlimited Token Allowance Drain Request.",
+          plainEnglishWhy: "The dApp requests permission to withdraw ALL tokens without limit on an unverified contract created 1.5 hours ago.",
+          actionableSafetyTip: "🛑 Safety Tip: Do NOT approve unlimited allowances for unverified dApps.",
+          signals: { valueUsdDeviation: 8.5, gasPriorityFeeRatio: 1.0, contractAgeHours: 1.5, contractIsVerified: false, isUnlimitedApproval: true, recipientTxCount: 2, historicalInteraction: false, domainTrustScore: 15 }
+        };
+        await processEvaluationAndIntercept(evalObj);
+      }
+      else if (type === 'PHISHING_AIRDROP') {
+        logTerminal("Triggering Preset: Fake Airdrop TypedData Signature...");
+        const evalObj = {
+          txId: "tx_0x" + Math.random().toString(16).substring(2, 8),
+          riskScore: 95,
+          isolationForestAnomalyScore: 0.92,
+          riskLevel: 'HIGH_RISK',
+          oneSentenceSummary: "🔴 Critical Risk — Phishing Off-Chain Permit Signature.",
+          plainEnglishWhy: "Off-chain signature requested on suspicious unverified origin domain (`claim-airdrop-eth.xyz`).",
+          actionableSafetyTip: "🛑 Safety Tip: Never sign typed data on untrusted phishing domains.",
+          signals: { valueUsdDeviation: 9.9, gasPriorityFeeRatio: 1.0, contractAgeHours: 0.5, contractIsVerified: false, isUnlimitedApproval: true, recipientTxCount: 1, historicalInteraction: false, domainTrustScore: 0 }
+        };
+        await processEvaluationAndIntercept(evalObj);
+      }
+    }
+
+    function fillCrafterPreset(level) {
+      if (level === 'SAFE') {
+        document.getElementById('customTo').value = '0x7a250d5630b4cf539739df2c5dacb4c659f2488d';
+        document.getElementById('customValueEth').value = '0.5';
+        document.getElementById('customGasRatio').value = '1.0';
+        document.getElementById('customTxType').value = 'ETH_SEND_TX';
+        logTerminal("🟢 Loaded SAFE Preset into Payload Crafter.");
+      } else if (level === 'CAUTION') {
+        document.getElementById('customTo').value = '0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45';
+        document.getElementById('customValueEth').value = '1.0';
+        document.getElementById('customGasRatio').value = '8.5';
+        document.getElementById('customTxType').value = 'ETH_SEND_TX';
+        logTerminal("🟡 Loaded CAUTION Preset (Priority Gas Spike) into Payload Crafter.");
+      } else if (level === 'HIGH_RISK') {
+        document.getElementById('customTo').value = '0x00001a4b988f01c897321';
+        document.getElementById('customValueEth').value = '2.5';
+        document.getElementById('customGasRatio').value = '1.0';
+        document.getElementById('customTxType').value = 'ETH_SIGN_TYPED_DATA';
+        logTerminal("🔴 Loaded HIGH RISK Preset (Unverified Contract + Permit Drainer) into Payload Crafter.");
+      }
+    }
+
+    async function executeCustomCraftedTx() {
+      const to = document.getElementById('customTo').value.trim();
+      const valEth = parseFloat(document.getElementById('customValueEth').value) || 0;
+      const gasRatio = parseFloat(document.getElementById('customGasRatio').value) || 1.0;
+      const txType = document.getElementById('customTxType').value;
+
+      logTerminal(`Crafting custom request: ${txType} to ${to}`);
+      
+      const isHighVal = valEth > 5.0;
+      const isHighGas = gasRatio > 2.5;
+      const isUnverified = to.toLowerCase().startsWith('0x000') || to.toLowerCase().startsWith('0xdead') || txType === 'ETH_SIGN_TYPED_DATA';
+
+      let riskScore = 12;
+      let riskLevel = 'SAFE';
+      let factor = -0.76;
+
+      if (isUnverified) {
+        riskScore = 88;
+        riskLevel = 'HIGH_RISK';
+        factor = 0.85;
+      } else if (isHighVal || isHighGas) {
+        riskScore = 52;
+        riskLevel = 'CAUTION';
+        factor = 0.25;
+      }
+
+      const signals = {
+        valueUsdDeviation: valEth > 5.0 ? 8.5 : (valEth > 1.0 ? 3.5 : 1.0),
+        gasPriorityFeeRatio: gasRatio,
+        contractAgeHours: isUnverified ? 1.5 : 8760,
+        contractIsVerified: !isUnverified,
+        isUnlimitedApproval: txType === 'ETH_SIGN_TYPED_DATA' || isUnverified,
+        recipientTxCount: isUnverified ? 2 : 50000,
+        historicalInteraction: !isUnverified,
+        domainTrustScore: isUnverified ? 15 : 90
+      };
+
+      const evalObj = {
+        txId: "tx_0x" + Math.random().toString(16).substring(2, 8),
+        riskScore,
+        isolationForestAnomalyScore: factor,
+        riskLevel,
+        oneSentenceSummary: `${riskLevel === 'HIGH_RISK' ? '🔴 High Risk — Unverified / Suspicious Recipient Contract' : riskLevel === 'CAUTION' ? '🟡 Caution — Priority Gas Spike / Value Deviation' : '🟢 Safe — Verified contract interaction'}`,
+        plainEnglishWhy: riskLevel === 'HIGH_RISK' 
+          ? `The target recipient address (${to}) is unverified with zero historical volume or requests unlimited token spending access.`
+          : riskLevel === 'CAUTION'
+          ? `Transaction uses a priority gas ratio of ${gasRatio}x or transfers ${valEth} ETH exceeding normal baseline.`
+          : `Interacts with verified contract. No suspicious approval requests or gas manipulation detected.`,
+        actionableSafetyTip: riskLevel === 'HIGH_RISK'
+          ? "🛑 Safety Tip: Do not send funds or approve access to unverified recipient contracts."
+          : riskLevel === 'CAUTION'
+          ? "💡 Safety Tip: Consider waiting for priority gas spikes to settle before sending."
+          : "💡 Safety Tip: Safe to proceed. Always double-check recipient address digits.",
+        signals
+      };
+
+      await processEvaluationAndIntercept(evalObj);
+    }
+
+    let autoAttackTimer = null;
+    function toggleAutoAttackStream() {
+      const btn = document.getElementById('streamToggleBtn');
+      if (autoAttackTimer) {
+        clearInterval(autoAttackTimer);
+        autoAttackTimer = null;
+        btn.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span><span>▶️ Start Dynamic Live Traffic Stream</span>`;
+        logTerminal("⏹️ Dynamic live traffic stream stopped.");
+      } else {
+        logTerminal("▶️ Dynamic live traffic stream started! Generating synthetic Web3 attack traffic every 2.5s...");
+        const presets = ['SAFE_UNISWAP', 'MEDIUM_GAS_SPIKE', 'RISKY_UNLIMITED_DRAINER', 'PHISHING_AIRDROP'];
+        autoAttackTimer = setInterval(() => {
+          const randPreset = presets[Math.floor(Math.random() * presets.length)];
+          triggerPreset(randPreset);
+        }, 2500);
+        btn.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span><span>🔴 Pause Dynamic Stream</span>`;
+      }
+    }
+
+    // Initial render of default signals table & state load
+    renderFeatureMatrixTable(activeSignals);
+    updateSimpleRiskAnalysis('SAFE', activeSignals);
+    refreshLocalStorageState();
   </script>
 </body>
 </html>

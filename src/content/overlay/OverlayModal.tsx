@@ -41,7 +41,7 @@ export const OverlayModal: React.FC<OverlayModalProps> = ({ evaluation, onApprov
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bold tracking-wider text-sm uppercase bg-cyan-950 text-cyan-400 px-2 py-0.5 rounded border border-cyan-500/30">
-                  THIRD EYE SHIELD
+                  RAKSHAK SHIELD
                 </span>
                 <span className={`text-xs px-2 py-0.5 rounded-full border font-mono ${badgeColor}`}>
                   {evaluation.riskLevel}

@@ -21,16 +21,16 @@ export class IsolationForestEngine {
     const isUnlimitedApproval = this.detectUnlimitedApproval(req);
     const gasPriorityRatio = this.calculateGasRatio(txObj);
     const contractAddr = (txObj.to || '').toLowerCase();
-    
-    const isKnownVerified = this.isKnownVerifiedContract(contractAddr);
-    const contractAgeHours = isKnownVerified ? 8760 : (contractAddr.startsWith('0x000') ? 1.5 : 72);
-    const recipientTxCount = isKnownVerified ? 50000 : 12;
+    const isSuspicious = contractAddr.startsWith('0x000') || contractAddr.startsWith('0xdead');
+    const isKnownVerified = this.isKnownVerifiedContract(contractAddr) || (!isSuspicious && contractAddr.length >= 10);
+    const contractAgeHours = isKnownVerified ? 8760 : 1.5;
+    const recipientTxCount = isKnownVerified ? 50000 : 2;
     const historicalInteraction = isKnownVerified;
     const domainTrustScore = this.calculateDomainTrust(req.originDomain);
 
     return {
       valueUsd,
-      valueUsdDeviation: valueUsd > 5000 ? 8.5 : (valueUsd > 1000 ? 3.2 : 1.0),
+      valueUsdDeviation: valueUsd > 15000 ? 8.5 : (valueUsd > 5000 ? 3.2 : 1.0),
       gasPriorityFeeRatio: gasPriorityRatio,
       contractAgeHours,
       contractIsVerified: isKnownVerified,
@@ -47,17 +47,18 @@ export class IsolationForestEngine {
     const params = raw.params || [];
     const txObj = typeof params[0] === 'object' ? params[0] : {};
     const recipientAddr = (txObj.to || '0x...').toLowerCase();
+    const isSuspiciousAddr = recipientAddr.startsWith('0x000') || recipientAddr.startsWith('0xdead');
 
     // Determine anomaly score using tree path length logic
     let riskScore = 12;
     let anomalyFactor = -0.76;
     let riskLevel: 'SAFE' | 'CAUTION' | 'HIGH_RISK' = 'SAFE';
 
-    if (signals.isUnlimitedApproval || signals.domainTrustScore < 40 || !signals.contractIsVerified) {
+    if (signals.isUnlimitedApproval || signals.domainTrustScore < 40 || isSuspiciousAddr) {
       riskScore = 88;
       anomalyFactor = 0.85;
       riskLevel = 'HIGH_RISK';
-    } else if (signals.contractAgeHours < 24 || signals.gasPriorityFeeRatio > 2.5) {
+    } else if (signals.gasPriorityFeeRatio > 2.5 || signals.valueUsdDeviation > 5.0) {
       riskScore = 52;
       anomalyFactor = 0.25;
       riskLevel = 'CAUTION';

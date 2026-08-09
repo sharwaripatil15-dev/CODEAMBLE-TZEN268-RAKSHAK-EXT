@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Third Eye - Web3 Security & Anomaly Guard",
+  "name": "Rakshak - Web3 Security & Anomaly Guard",
   "version": "1.0.0",
   "description": "Real-Time Web3 Fraud Detection & Isolation Forest Pre-Signing Protection for MetaMask & Browser Wallets.",
   "permissions": [
@@ -31,7 +31,7 @@
   ],
   "action": {
     "default_popup": "src/popup/index.html",
-    "default_title": "Third Eye Shield"
+    "default_title": "Rakshak Shield"
   },
   "icons": {
     "16": "assets/icon16.png",
