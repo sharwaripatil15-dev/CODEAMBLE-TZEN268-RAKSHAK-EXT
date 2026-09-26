@@ -25,61 +25,61 @@ export const OverlayModal: React.FC<OverlayModalProps> = ({ evaluation, onApprov
     : 'from-emerald-950/50 via-slate-900 to-slate-950 border-emerald-500/30';
 
   return (
-    <div className="fixed inset-0 z-[2147483647] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md font-sans text-slate-100 select-none animate-fadeIn">
-      <div className="w-full max-w-lg overflow-hidden rounded-3xl bg-[#070A12] border border-slate-800 shadow-2xl shadow-cyan-500/5 transition-all">
+    <div className="fixed inset-0 z-[2147483647] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm font-sans text-slate-100 select-none animate-fadeIn">
+      <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-[#12151E] border border-slate-800 shadow-2xl transition-all">
         
         {/* Header Banner */}
-        <div className={`p-5 bg-gradient-to-r ${headerGradient} border-b border-slate-800 flex items-center justify-between`}>
+        <div className={`p-4 bg-[#141824] border-b border-slate-800 flex items-center justify-between`}>
           <div className="flex items-center gap-3">
-            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center border shrink-0 ${
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center border shrink-0 ${
               isCritical 
-                ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' 
+                ? 'bg-rose-950/60 border-rose-800/80 text-rose-400' 
                 : isWarning 
-                ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' 
-                : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                ? 'bg-amber-950/60 border-amber-800/80 text-amber-400' 
+                : 'bg-emerald-950/60 border-emerald-800/80 text-emerald-400'
             }`}>
               {isCritical ? (
-                <ShieldAlert className="w-6 h-6 text-rose-400 animate-pulse" />
+                <ShieldAlert className="w-5 h-5 text-rose-400" />
               ) : isWarning ? (
-                <AlertTriangle className="w-6 h-6 text-amber-400" />
+                <AlertTriangle className="w-5 h-5 text-amber-400" />
               ) : (
-                <ShieldCheck className="w-6 h-6 text-emerald-400" />
+                <ShieldCheck className="w-5 h-5 text-emerald-400" />
               )}
             </div>
 
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-mono font-bold tracking-wider text-[11px] uppercase bg-cyan-950/80 text-cyan-400 px-2 py-0.5 rounded border border-cyan-500/30">
-                  RAKSHAK FIREWALL
+                <span className="font-semibold text-xs text-white">
+                  Rakshak Security Guard
                 </span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full border font-mono font-bold uppercase ${badgeColor}`}>
+                <span className={`text-[10px] px-2 py-0.5 rounded font-mono font-semibold uppercase ${badgeColor}`}>
                   {evaluation.riskLevel}
                 </span>
               </div>
-              <h2 className="text-base font-bold text-white mt-1 tracking-tight">
-                {isCritical ? 'Critical Security Threat Intercepted' : isWarning ? 'Transaction Caution Advised' : 'Verified Safe Interaction'}
+              <h2 className="text-sm font-bold text-white mt-0.5 tracking-tight">
+                {isCritical ? 'Security Threat Intercepted' : isWarning ? 'Transaction Caution Advised' : 'Verified Safe Interaction'}
               </h2>
             </div>
           </div>
 
           <div className="text-right font-mono shrink-0 pl-3">
-            <div className={`text-2xl font-extrabold ${isCritical ? 'text-rose-400' : isWarning ? 'text-amber-400' : 'text-emerald-400'}`}>
+            <div className={`text-xl font-bold ${isCritical ? 'text-rose-400' : isWarning ? 'text-amber-400' : 'text-emerald-400'}`}>
               {evaluation.riskScore}<span className="text-xs text-slate-500">/100</span>
             </div>
-            <div className="text-[9px] text-slate-500 uppercase tracking-widest font-semibold">RISK SCORE</div>
+            <div className="text-[9px] text-slate-400 uppercase tracking-wider font-medium">Risk Score</div>
           </div>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+        <div className="p-5 space-y-3.5 max-h-[70vh] overflow-y-auto">
           
           {/* Isolation Forest Telemetry Card */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-2.5">
-            <div className="flex items-center justify-between text-xs text-cyan-400 font-mono">
-              <span className="flex items-center gap-1.5 font-bold">
-                <Cpu className="w-4 h-4 text-cyan-400" /> ISOLATION FOREST ML ENGINE
+          <div className="bg-[#0D0F15] border border-slate-800 rounded-xl p-3.5 space-y-2">
+            <div className="flex items-center justify-between text-xs text-slate-300 font-mono">
+              <span className="flex items-center gap-1.5 font-medium">
+                <Cpu className="w-3.5 h-3.5 text-blue-400" /> Isolation Forest Engine
               </span>
-              <span className="text-[11px] text-slate-400">ANOMALY: <span className="text-cyan-300 font-bold">{evaluation.isolationForestAnomalyScore}</span></span>
+              <span className="text-[11px] text-slate-400">Score: <span className="text-slate-200 font-semibold">{evaluation.isolationForestAnomalyScore}</span></span>
             </div>
             
             {/* Visual Risk Gauge */}
@@ -92,7 +92,7 @@ export const OverlayModal: React.FC<OverlayModalProps> = ({ evaluation, onApprov
               />
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed font-sans">
+            <p className="text-xs text-slate-300 leading-relaxed">
               {evaluation.aiExplanation || evaluation.plainEnglishWhy}
             </p>
           </div>
@@ -137,10 +137,10 @@ export const OverlayModal: React.FC<OverlayModalProps> = ({ evaluation, onApprov
 
           {/* Actionable Safety Advisory */}
           {evaluation.actionableSafetyTip && (
-            <div className={`p-3 rounded-xl border text-xs font-mono flex items-start gap-2 ${
+            <div className={`p-3 rounded-xl border text-xs flex items-start gap-2 ${
               isCritical
-                ? 'bg-rose-950/30 border-rose-500/30 text-rose-300'
-                : 'bg-amber-950/30 border-amber-500/30 text-amber-300'
+                ? 'bg-rose-950/40 border-rose-800/60 text-rose-300'
+                : 'bg-amber-950/40 border-amber-800/60 text-amber-300'
             }`}>
               <Lock className="w-3.5 h-3.5 shrink-0 mt-0.5" />
               <span className="leading-relaxed">{evaluation.actionableSafetyTip.replace(/^[💡🛑]\s*/, '')}</span>
@@ -150,23 +150,23 @@ export const OverlayModal: React.FC<OverlayModalProps> = ({ evaluation, onApprov
         </div>
 
         {/* Action Decision Footer */}
-        <div className="p-4 bg-slate-950 border-t border-slate-800 flex items-center justify-between gap-3">
+        <div className="p-4 bg-[#141824] border-t border-slate-800 flex items-center justify-between gap-3">
           <button
             onClick={onBlock}
-            className="flex-1 py-3 px-4 rounded-xl font-mono font-bold text-xs bg-rose-600 hover:bg-rose-500 text-white transition-all shadow-lg shadow-rose-600/20 flex items-center justify-center gap-2"
+            className="flex-1 py-2.5 px-4 rounded-xl font-medium text-xs bg-rose-600 hover:bg-rose-500 text-white transition-colors shadow-sm flex items-center justify-center gap-2"
           >
-            <XCircle className="w-4 h-4" /> BLOCK & QUARANTINE
+            <XCircle className="w-4 h-4" /> Block & Quarantine
           </button>
 
           <button
             onClick={onApprove}
-            className={`px-4 py-3 rounded-xl font-mono font-bold text-xs transition-all flex items-center justify-center gap-2 ${
+            className={`px-4 py-2.5 rounded-xl font-medium text-xs transition-colors flex items-center justify-center gap-2 ${
               isCritical
-                ? 'bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800'
-                : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20'
+                ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'
+                : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm'
             }`}
           >
-            <CheckCircle2 className="w-4 h-4" /> {isCritical ? 'Bypass' : 'Approve'}
+            <CheckCircle2 className="w-4 h-4" /> {isCritical ? 'Proceed Anyway' : 'Approve'}
           </button>
         </div>
 
