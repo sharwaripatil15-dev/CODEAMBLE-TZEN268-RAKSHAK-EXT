@@ -33,7 +33,9 @@ import {
   ExternalLink,
   Sliders,
   XCircle,
-  Radio
+  Radio,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 export default function App() {
@@ -49,6 +51,7 @@ export default function App() {
   const [copiedAddress, setCopiedAddress] = useState<string>('');
   const [evaluationsList, setEvaluationsList] = useState<RiskEvaluation[]>([]);
   const [approvals, setApprovals] = useState<ApprovalItem[]>([]);
+  const [expandedAnalysisAppId, setExpandedAnalysisAppId] = useState<string | null>(null);
   const [editingApprovalId, setEditingApprovalId] = useState<string | null>(null);
   const [customAllowanceVal, setCustomAllowanceVal] = useState<string>('10.0');
   const [approvalSuccessMsg, setApprovalSuccessMsg] = useState<string>('');
@@ -302,7 +305,24 @@ export default function App() {
 
   const handleGrantApproval = async (app: ApprovalItem) => {
     setLoading(true);
-    const newAllowanceStr = customAllowanceVal ? `${customAllowanceVal} ${app.tokenSymbol}` : `10.0 ${app.tokenSymbol}`;
+    const safeAllowance = app.allowance === 'UNLIMITED' ? `10.0 ${app.tokenSymbol}` : app.allowance;
+
+    const updated = approvals.map((item) =>
+      item.id === app.id ? { ...item, allowance: safeAllowance, riskLevel: 'SAFE' as const } : item
+    );
+    setApprovals(updated);
+    await setItem('activeApprovals', updated);
+
+    setEditingApprovalId(null);
+    setLoading(false);
+    setApprovalSuccessMsg(`Approved allowance for ${app.spenderName} (${safeAllowance})`);
+    setTimeout(() => setApprovalSuccessMsg(''), 3000);
+  };
+
+  const handleSaveCustomLimit = async (app: ApprovalItem) => {
+    setLoading(true);
+    const amount = customAllowanceVal.trim() || '10.0';
+    const newAllowanceStr = `${amount} ${app.tokenSymbol}`;
 
     const updated = approvals.map((item) =>
       item.id === app.id ? { ...item, allowance: newAllowanceStr, riskLevel: 'SAFE' as const } : item
@@ -312,7 +332,7 @@ export default function App() {
 
     setEditingApprovalId(null);
     setLoading(false);
-    setApprovalSuccessMsg(`Updated allowance: ${newAllowanceStr}`);
+    setApprovalSuccessMsg(`Updated allowance limit for ${app.spenderName}: ${newAllowanceStr}`);
     setTimeout(() => setApprovalSuccessMsg(''), 3000);
   };
 
@@ -365,14 +385,14 @@ export default function App() {
           <div className="flex items-center gap-1.5 text-xs">
             <button
               onClick={toggleTheme}
-              title="Toggle Tactical / Stone Theme"
-              className={`px-2 py-0.5 rounded border font-medium text-[11px] transition-colors ${
+              title={isLightMode ? 'Switch to Dark Mode (Tactical)' : 'Switch to Light Mode (Stone)'}
+              className={`p-1 rounded-md border transition-colors flex items-center justify-center ${
                 isLightMode
-                  ? 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800'
-                  : 'bg-[#21232C] hover:bg-[#2C2F3B] border-[#343746] text-[#FF5A1F]'
+                  ? 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-700'
+                  : 'bg-[#21232C] hover:bg-[#2C2F3B] border-[#343746] text-amber-400'
               }`}
             >
-              {isLightMode ? '🏛️ Stone' : '🔥 Tactical'}
+              {isLightMode ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
             </button>
 
             <span className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-medium">
@@ -400,7 +420,7 @@ export default function App() {
             <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium border shrink-0 ${
               isLightMode ? 'bg-white border-[#D9D5CA] text-slate-700' : 'bg-[#21232C] border-[#343746] text-slate-300'
             }`}>
-              {networkName}
+              MetaMask ID
             </span>
 
             {isEditingMetaMaskId ? (
@@ -513,90 +533,6 @@ export default function App() {
         {/* TAB 1: SHIELD (HOME) */}
         {activeTab === 'home' && (
           <div className="space-y-3">
-
-            {/* Status Shield Card */}
-            <div className={`p-4 rounded-xl border text-center relative overflow-hidden shadow-sm ${cardBgClass}`}>
-              <div
-                className="w-10 h-10 mx-auto rounded-xl border flex items-center justify-center mb-2 shadow-sm transition-colors"
-                style={{
-                  backgroundColor: isLightMode ? 'rgba(217, 72, 15, 0.10)' : 'rgba(255, 90, 31, 0.12)',
-                  borderColor: isLightMode ? 'rgba(217, 72, 15, 0.25)' : 'rgba(255, 90, 31, 0.3)',
-                  color: brandColor
-                }}
-              >
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-
-              <div className={`text-xs font-semibold tracking-wide ${theme === 'stone' ? 'text-slate-900' : 'text-white'}`}>
-                Real-Time Web3 Pre-Signing Firewall
-              </div>
-              <p className="text-[11px] text-slate-500 mt-0.5">
-                {activeDomain ? `Guarding ${activeDomain}` : 'Scanning EVM Provider'}
-              </p>
-
-              <div className={`mt-3 pt-3 border-t grid grid-cols-2 gap-2 text-[10px] ${
-                theme === 'stone' ? 'border-slate-100' : 'border-[#262833]'
-              }`}>
-                <div className={`p-2 rounded-lg border ${wellBgClass}`}>
-                  <span className="text-slate-500 block uppercase font-medium">Threats Blocked</span>
-                  <span className="text-rose-600 font-semibold text-sm">1 Drainer</span>
-                </div>
-                <div className={`p-2 rounded-lg border ${wellBgClass}`}>
-                  <span className="text-slate-500 block uppercase font-medium">Isolation Forest</span>
-                  <span className={`font-semibold text-sm ${backendOnline ? 'text-emerald-600' : 'text-amber-600'}`}>
-                    {backendOnline ? 'Online (8000)' : 'Client Model'}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Security Toggles */}
-            <div className={`p-3 rounded-xl border space-y-2 text-xs shadow-sm ${cardBgClass}`}>
-              <div className={`text-[10px] uppercase font-semibold pb-1 border-b ${
-                theme === 'stone' ? 'text-slate-400 border-slate-100' : 'text-slate-500 border-[#262833]'
-              }`}>
-                Protection Protocols
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className={`font-medium ${theme === 'stone' ? 'text-slate-800' : 'text-slate-200'}`}>Auto-Quarantine Drainers</div>
-                  <div className="text-[10px] text-slate-500">Blocks infinite token approvals (2^256-1)</div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={settings.autoBlockDrainers}
-                  onChange={(e) => {
-                    const newS = { ...settings, autoBlockDrainers: e.target.checked };
-                    setSettings(newS);
-                    setItem('thirdEyeSettings', newS);
-                  }}
-                  style={{ accentColor: brandColor }}
-                  className="w-4 h-4 rounded cursor-pointer"
-                />
-              </div>
-
-              <div className={`flex items-center justify-between pt-1.5 border-t ${
-                theme === 'stone' ? 'border-slate-100' : 'border-[#262833]'
-              }`}>
-                <div>
-                  <div className={`font-medium ${theme === 'stone' ? 'text-slate-800' : 'text-slate-200'}`}>Plain-English Explainability</div>
-                  <div className="text-[10px] text-slate-500">Explains risk factors in natural language</div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={settings.enableAiExplanation}
-                  onChange={(e) => {
-                    const newS = { ...settings, enableAiExplanation: e.target.checked };
-                    setSettings(newS);
-                    setItem('thirdEyeSettings', newS);
-                  }}
-                  style={{ accentColor: brandColor }}
-                  className="w-4 h-4 rounded cursor-pointer"
-                />
-              </div>
-            </div>
-
             {/* In-Extension Transaction Simulation Widget */}
             <div className={`p-3.5 rounded-xl border space-y-2.5 shadow-sm ${cardBgClass}`}>
               <div className={`flex items-center justify-between text-xs border-b pb-2 ${
@@ -671,6 +607,101 @@ export default function App() {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Wallet Security Score & Health Checklist */}
+            <div className={`p-3.5 rounded-xl border space-y-3 text-xs shadow-sm ${cardBgClass}`}>
+              {/* Header with Security Score */}
+              <div className="flex items-center justify-between border-b pb-2.5">
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                    <span className={`font-semibold text-xs ${theme === 'stone' ? 'text-slate-900' : 'text-white'}`}>
+                      Wallet Security Score
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-slate-500 mt-0.5">Real-time threat evaluation</div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="text-right">
+                    <div className="text-sm font-bold font-mono text-emerald-500 leading-tight">
+                      {approvals.some((a) => a.riskLevel === 'HIGH' || a.allowance === 'UNLIMITED') ? '92' : '98'}
+                      <span className="text-[10px] text-slate-400 font-normal">/100</span>
+                    </div>
+                    <span className="text-[9px] font-semibold text-emerald-600 uppercase tracking-wider block">
+                      Protected
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Protection Checklist */}
+              <div className="space-y-1.5">
+                <div className={`p-2 rounded-lg border flex items-center justify-between text-[11px] ${wellBgClass}`}>
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span className={theme === 'stone' ? 'text-slate-700' : 'text-slate-200'}>
+                      Pre-Signing Drainer Guard
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono font-medium text-emerald-600">Active</span>
+                </div>
+
+                <div className={`p-2 rounded-lg border flex items-center justify-between text-[11px] ${wellBgClass}`}>
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span className={theme === 'stone' ? 'text-slate-700' : 'text-slate-200'}>
+                      Phishing & Spoofing Defense
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono font-medium text-emerald-600">Active</span>
+                </div>
+
+                <div className={`p-2 rounded-lg border flex items-center justify-between text-[11px] ${wellBgClass}`}>
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span className={theme === 'stone' ? 'text-slate-700' : 'text-slate-200'}>
+                      Gas Spike & MEV Anomaly Sensor
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono font-medium text-emerald-600">Active</span>
+                </div>
+              </div>
+
+              {/* Action Needed or Safe State */}
+              {approvals.some((a) => a.riskLevel === 'HIGH' || a.allowance === 'UNLIMITED') ? (
+                <div
+                  onClick={() => setActiveTab('approvals')}
+                  className={`p-2.5 rounded-lg border flex items-center justify-between text-xs cursor-pointer transition-all ${
+                    isLightMode
+                      ? 'bg-amber-50 hover:bg-amber-100 border-amber-200 text-amber-900'
+                      : 'bg-amber-950/40 hover:bg-amber-900/50 border-amber-500/30 text-amber-200'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <AlertTriangle className="w-4 h-4 shrink-0 text-amber-500" />
+                    <div className="min-w-0">
+                      <div className="font-semibold text-[11px] truncate">1 Action Needed: Unlimited Approval</div>
+                      <div className="text-[10px] opacity-80 truncate">1inch V5 Router has unbounded USDC access</div>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 shrink-0">
+                    Review →
+                  </span>
+                </div>
+              ) : (
+                <div
+                  className={`p-2 rounded-lg border flex items-center gap-2 text-xs ${
+                    isLightMode
+                      ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                      : 'bg-emerald-950/30 border-emerald-500/30 text-emerald-300'
+                  }`}
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-500" />
+                  <span className="text-[11px]">All clear — No high-risk permissions or active threats</span>
+                </div>
+              )}
             </div>
 
           </div>
@@ -805,61 +836,165 @@ export default function App() {
                         <span className="text-xs font-semibold">{app.spenderName}</span>
                       </div>
 
-                      <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded ${
-                        isHigh ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                      }`}>
-                        {app.riskLevel}
-                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setExpandedAnalysisAppId(expandedAnalysisAppId === app.id ? null : app.id)}
+                        title="Click to view risk analysis"
+                        className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded cursor-pointer transition-all flex items-center gap-1 shadow-xs hover:scale-105 active:scale-95 border ${
+                          isHigh
+                            ? isLightMode
+                              ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
+                              : 'bg-rose-950/60 hover:bg-rose-900/70 text-rose-300 border-rose-700/50'
+                            : isLightMode
+                              ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
+                              : 'bg-emerald-950/60 hover:bg-emerald-900/70 text-emerald-300 border-emerald-700/50'
+                        }`}
+                      >
+                        <span>{app.riskLevel}</span>
+                        <ChevronDown className={`w-3 h-3 transition-transform ${expandedAnalysisAppId === app.id ? 'rotate-180' : ''}`} />
+                      </button>
                     </div>
 
                     <div className={`p-2 rounded-lg border text-xs font-mono flex items-center justify-between ${wellBgClass}`}>
-                      <span>Allowance:</span>
-                      <span className={isHigh ? 'text-rose-600 font-semibold' : 'font-semibold'}>{app.allowance}</span>
+                      <span className={isLightMode ? 'text-slate-600 font-sans' : 'text-slate-400 font-sans'}>Allowance:</span>
+                      <div className="flex items-center gap-2">
+                        <span className={isHigh ? 'text-rose-600 font-semibold' : 'font-semibold'}>{app.allowance}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const isCurrentlyEditing = editingApprovalId === app.id;
+                            setEditingApprovalId(isCurrentlyEditing ? null : app.id);
+                            setCustomAllowanceVal(
+                              app.allowance === 'UNLIMITED'
+                                ? '10.0'
+                                : (app.allowance.split(' ')[0] || '10.0')
+                            );
+                          }}
+                          title="Change Spending Limit"
+                          className={`text-[10px] font-sans px-2 py-0.5 rounded border transition-all flex items-center gap-1 cursor-pointer active:scale-95 shadow-xs ${
+                            isLightMode
+                              ? 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'
+                              : 'bg-[#21232C] hover:bg-[#2C2F3B] text-slate-200 border-[#343746]'
+                          }`}
+                        >
+                          <Edit3 className="w-2.5 h-2.5" />
+                          <span>Change Limit</span>
+                        </button>
+                      </div>
                     </div>
 
-                    {isEditing ? (
-                      <div className={`p-2 rounded-lg border space-y-2 ${wellBgClass}`}>
+                    {editingApprovalId === app.id && (
+                      <div className={`p-2.5 rounded-lg border space-y-2 transition-all ${wellBgClass}`}>
+                        <div className="text-[10px] font-sans flex items-center justify-between">
+                          <span className={isLightMode ? 'text-slate-600' : 'text-slate-400'}>Enter Custom Spending Limit:</span>
+                          <span className="font-mono font-semibold">{app.tokenSymbol}</span>
+                        </div>
                         <div className="flex gap-2">
                           <input
                             type="text"
                             value={customAllowanceVal}
                             onChange={(e) => setCustomAllowanceVal(e.target.value)}
-                            placeholder="e.g. 10.0"
-                            className={`flex-1 border rounded px-2 py-1 text-xs focus:outline-none font-mono ${
-                              theme === 'stone' ? 'bg-white border-slate-300 text-slate-900' : 'bg-[#181920] border-[#262833] text-white'
+                            placeholder="e.g. 25.0"
+                            className={`flex-1 border rounded px-2.5 py-1 text-xs focus:outline-none font-mono ${
+                              isLightMode
+                                ? 'bg-white border-slate-300 text-slate-900'
+                                : 'bg-[#181920] border-[#262833] text-white'
                             }`}
+                            autoFocus
                           />
                           <button
-                            onClick={() => handleGrantApproval(app)}
-                            className="px-3 py-1 text-white rounded text-xs font-medium"
+                            type="button"
+                            onClick={() => handleSaveCustomLimit(app)}
+                            className="px-3 py-1 text-white rounded text-xs font-medium shadow-sm transition-opacity hover:opacity-90 active:scale-95"
                             style={{ backgroundColor: brandColor }}
                           >
                             Save
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditingApprovalId(null)}
+                            className={`px-2 py-1 rounded text-xs border transition-colors ${
+                              isLightMode
+                                ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300'
+                                : 'bg-[#21232C] hover:bg-[#2C2F3B] text-slate-300 border-[#343746]'
+                            }`}
+                          >
+                            Cancel
+                          </button>
                         </div>
                       </div>
-                    ) : (
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          onClick={() => {
-                            setEditingApprovalId(app.id);
-                            setCustomAllowanceVal(app.allowance.split(' ')[0] || '10.0');
-                          }}
-                          className={`py-1.5 px-2.5 border rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
-                            theme === 'stone' ? 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200' : 'bg-[#21232C] hover:bg-[#2C2F3B] text-slate-200 border-[#343746]'
-                          }`}
-                        >
-                          <PlusCircle className="w-3.5 h-3.5" /> Adjust Limit
-                        </button>
+                    )}
 
-                        <button
-                          onClick={() => handleRevoke(app)}
-                          className="py-1.5 px-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1"
-                        >
-                          <Trash2 className="w-3.5 h-3.5 text-rose-600" /> Revoke
-                        </button>
+                    {expandedAnalysisAppId === app.id && (
+                      <div className={`p-2.5 rounded-lg border text-xs space-y-1.5 transition-all ${
+                        isHigh
+                          ? isLightMode
+                            ? 'bg-rose-50 border-rose-200 text-rose-950'
+                            : 'bg-rose-950/40 border-rose-500/30 text-rose-200'
+                          : isLightMode
+                            ? 'bg-emerald-50 border-emerald-200 text-emerald-950'
+                            : 'bg-emerald-950/40 border-emerald-500/30 text-emerald-200'
+                      }`}>
+                        <div className="font-semibold flex items-center justify-between text-[11px]">
+                          <span className="flex items-center gap-1.5 font-sans">
+                            {isHigh ? <AlertTriangle className="w-3.5 h-3.5 text-rose-500" /> : <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />}
+                            Risk Analysis & Vector
+                          </span>
+                          <span className="text-[10px] font-mono opacity-80">
+                            {isHigh ? 'Unbounded Exposure' : 'Verified Safe'}
+                          </span>
+                        </div>
+
+                        <div className={`text-[11px] leading-relaxed font-sans space-y-1 ${isLightMode ? 'text-slate-800' : 'text-slate-300'}`}>
+                          {isHigh ? (
+                            <>
+                              <p>
+                                <strong className="text-rose-600 font-semibold">Unlimited Token Allowance:</strong> Permits <strong>{app.spenderName}</strong> to withdraw up to 2^256-1 {app.tokenSymbol} from your wallet at any time without further authorization.
+                              </p>
+                              <p className={`text-[10px] font-mono truncate ${isLightMode ? 'text-slate-600' : 'text-slate-400'}`}>
+                                Target Spender: {app.spenderAddress}
+                              </p>
+                              <p className={`text-[10px] pt-1 border-t ${isLightMode ? 'border-rose-200 text-rose-700' : 'border-rose-800/40 text-rose-300'}`}>
+                                💡 Click <strong>Approve</strong> to safely cap allowance to 10.0 {app.tokenSymbol}, or <strong>Revoke</strong> to strip access.
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <p>
+                                <strong className="text-emerald-600 font-semibold">Capped Spending Limit:</strong> Allowance is strictly limited to <strong>{app.allowance}</strong>. The contract cannot drain funds exceeding this cap.
+                              </p>
+                              <p className={`text-[10px] font-mono truncate ${isLightMode ? 'text-slate-600' : 'text-slate-400'}`}>
+                                Verified Protocol: {app.spenderName} ({app.spenderAddress.substring(0, 10)}...)
+                              </p>
+                            </>
+                          )}
+                        </div>
                       </div>
                     )}
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => handleGrantApproval(app)}
+                        className={`py-1.5 px-2.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 border shadow-sm ${
+                          isLightMode
+                            ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
+                            : 'bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-400 border-emerald-500/30'
+                        }`}
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Approve
+                      </button>
+
+                      <button
+                        onClick={() => handleRevoke(app)}
+                        className={`py-1.5 px-2.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 border shadow-sm ${
+                          isLightMode
+                            ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
+                            : 'bg-rose-950/40 hover:bg-rose-900/50 text-rose-400 border-rose-500/30'
+                        }`}
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-rose-500" /> Revoke
+                      </button>
+                    </div>
                   </div>
                 );
               })
@@ -901,28 +1036,26 @@ export default function App() {
               </div>
             </div>
 
-            <div className={`p-3.5 rounded-xl border space-y-2 shadow-sm ${cardBgClass}`}>
-              <div className="font-semibold text-xs uppercase text-slate-500">ML Microservice Endpoint</div>
-              <div className={`p-2 rounded-lg border font-mono text-xs ${wellBgClass}`}>
-                {settings.customBackendUrl}
+            <div className={`p-3.5 rounded-xl border space-y-2.5 shadow-sm ${cardBgClass}`}>
+              <div className="font-semibold text-xs uppercase text-slate-500 tracking-wide">
+                Security Architecture
               </div>
-              <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
-                <span>Model: scikit-learn IsolationForest</span>
-                <span className={backendOnline ? 'text-emerald-600 font-semibold' : 'text-amber-600'}>
-                  {backendOnline ? 'Connected' : 'Disconnected'}
-                </span>
+              <div className={`p-2.5 rounded-lg border text-xs space-y-1.5 font-mono ${wellBgClass}`}>
+                <div className="flex items-center justify-between">
+                  <span className={isLightMode ? 'text-slate-600' : 'text-slate-400'}>Interception Layer:</span>
+                  <span className="font-semibold text-emerald-600">EVM RPC Proxy (Pre-Sign)</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className={isLightMode ? 'text-slate-600' : 'text-slate-400'}>Anomaly Engine:</span>
+                  <span className={`font-semibold ${isLightMode ? 'text-slate-800' : 'text-slate-200'}`}>Isolation Forest ML</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className={isLightMode ? 'text-slate-600' : 'text-slate-400'}>Target Chains:</span>
+                  <span className={isLightMode ? 'text-slate-700' : 'text-slate-300'}>Base, Ethereum, Arbitrum</span>
+                </div>
               </div>
-            </div>
-
-            <div className={`p-3.5 rounded-xl border space-y-2 shadow-sm ${cardBgClass}`}>
-              <div className="font-semibold text-xs uppercase text-slate-500">Whitelisted dApp Domains</div>
-              <div className="space-y-1 font-mono text-xs">
-                {settings.whitelistedDomains.map((d, i) => (
-                  <div key={i} className={`flex items-center justify-between p-1.5 rounded-lg border ${wellBgClass}`}>
-                    <span>{d}</span>
-                    <span className="text-emerald-600 text-[10px] font-semibold">VERIFIED</span>
-                  </div>
-                ))}
+              <div className={`text-[10px] leading-relaxed ${isLightMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                Rakshak operates transparently between the dApp and EVM wallet provider, analyzing transaction payloads for zero-day drainers, unverified contracts, and abnormal gas fees before signature prompt.
               </div>
             </div>
           </div>

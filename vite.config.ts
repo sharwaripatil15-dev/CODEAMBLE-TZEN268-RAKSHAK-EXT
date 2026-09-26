@@ -63,7 +63,8 @@ export default defineConfig({
           }
         });
         if (fs.existsSync(resolve(__dirname, 'dist/src/popup/index.html'))) {
-          fs.copyFileSync(resolve(__dirname, 'dist/src/popup/index.html'), resolve(__dirname, 'src/popup/index.html'));
+          fs.copyFileSync(resolve(__dirname, 'dist/src/popup/index.html'), resolve(__dirname, 'popup.html'));
+          fs.copyFileSync(resolve(__dirname, 'dist/src/popup/index.html'), resolve(__dirname, 'dist/popup.html'));
         }
 
         const rootAssets = resolve(__dirname, 'assets');
@@ -71,8 +72,9 @@ export default defineConfig({
         if (!fs.existsSync(rootAssets)) fs.mkdirSync(rootAssets, { recursive: true });
         if (!fs.existsSync(distAssets)) fs.mkdirSync(distAssets, { recursive: true });
 
-        const cyanPngBase64 = 'iVBORw0KGgoAAAANSU56NTAKAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOUERdVk4AAAAIAAAAAQAAAAEBAAAAABtFv8AAAAANSURBVBhXY/jPw/A/AAUBAPB/AWoAAAAASUVORK5CYII=';
-        const iconBuffer = Buffer.from(cyanPngBase64, 'base64');
+        // Tactical Flame #FF5A1F 1x1 PNG base64
+        const flamePngBase64 = 'iVBORw0KGgoAAAANSU56NTAKAAAACXBIWXMAAAsTAAALEwEAmpwYAAAADElEQVR4nGP4HyUPAAPUAXnNtuHVAAAAAElFTkSuQmCC';
+        const iconBuffer = Buffer.from(flamePngBase64, 'base64');
 
         ['icon16.png', 'icon48.png', 'icon128.png'].forEach((iconName) => {
           fs.writeFileSync(resolve(rootAssets, iconName), iconBuffer);
